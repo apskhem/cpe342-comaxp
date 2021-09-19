@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\employeeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,5 @@ Route::get('/', function () {
 
 use App\Http\Controllers\customerServiceController;
 Route::get('/getProductCatalog', [customerServiceController::class, 'getProductsCatalog']);
+
+Route::resource('employees', employeeController::class);

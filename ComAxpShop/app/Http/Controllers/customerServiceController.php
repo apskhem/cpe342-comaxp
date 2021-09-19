@@ -10,8 +10,8 @@ class customerServiceController extends Controller
     public function getProductsCatalog() {
 
         $products = DB::table('products')
-        ->groupBy('productLine')
-        ->get(['productLine','productName']);
+        ->groupBy('productVendor', 'productScale')
+        ->get(['productName','buyPrice']);
         
         return $products;
     }

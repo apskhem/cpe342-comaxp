@@ -46,8 +46,9 @@ class employeeController extends Controller
             'jobTitle' => $request->jobTitle,
             'password' => MD5($request->password)
         ]);
-        $employee->save();
 
+        $employee->save();
+        
         return "success";
     }
 

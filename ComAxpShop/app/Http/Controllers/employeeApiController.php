@@ -12,7 +12,7 @@ class employeeApiController extends Controller
 {
     public function createEmployee(Request $request){
         $validator = Validator::make(request()->all(), [
-            'employeeNumber' => 'required|digits:4|unique:employees|',
+            'employeeNumber' => 'required|digits:4|unique:employees',
             'lastName' => 'required',
             'firstName' => 'required',
             'extension' => 'required',

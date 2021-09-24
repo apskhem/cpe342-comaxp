@@ -21,7 +21,8 @@ class authApiController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(['errors' => $validator->errors()], 401);
+            return response()->json([
+                'errors' => $validator->errors()], 401);
         }
 
         $credentials = $request->only('employeeNumber', 'password');
@@ -32,8 +33,46 @@ class authApiController extends Controller
         else{
             $user = Employee::where('employeeNumber', $credentials['employeeNumber'])->first();
             $user->tokens()->delete();
-            $token = $user->createToken('postman');
-            return response()->json(['token' => $token->plainTextToken]);
+            $jobTitle = $user['jobTitle'];
+            
+            $userFirstName = $user['firstName'];
+            $userLastName = $user['lastName'];
+            $userFullName = $userFirstName.' '.$userLastName;
+
+            $token = $user->createToken($userFullName, [$jobTitle]);
+            return response()->json(['Token' => $token->plainTextToken]);
+        }
+    }
+
+    public function dashboardType(){
+        $user = auth()->user();
+
+        if($user->tokenCan('President')){
+            // Route::get('');
+            return response(['President']);
+        }
+        else if($user->tokenCan('VP Marketing')){
+            // Route::get('');
+            return response(['VP Marketing']);
+        }
+        else if($user->tokenCan('VP Sales')){
+            // Route::get('');
+            return response(['VP Sales']);
+        }
+        else if($user->tokenCan('Sales Manager (APAC)')){
+            // Route::get('');
+            return response(['Sales Manager (APAC)']);
+        }
+        else if($user->tokenCan('Sales Manager (NA)')){
+            // Route::get('');
+            return response(['Sales Manager (NA)']);
+        }
+        else if($user->tokenCan('Sales Rep')){
+            // Route::get('');
+            return response(['Sales Rep']);
+        }
+        else{
+            return response(['janitor']);
         }
     }
 }

@@ -30,3 +30,4 @@ Route::post('custom-login', [authController::class, 'customLogin'])->name('login
 Route::get('registration', [authController::class, 'registration'])->name('register-user');
 Route::post('custom-registration', [authController::class, 'customRegistration'])->name('register.custom'); 
 Route::get('signout', [authController::class, 'signOut'])->name('signout');
+

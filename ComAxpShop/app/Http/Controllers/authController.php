@@ -13,7 +13,7 @@ class authController extends Controller {
 
     public function index() {
         return view('auth.login');
-    }  
+    }
       
     public function customLogin(Request $request)
     {
@@ -24,11 +24,11 @@ class authController extends Controller {
    
         $credentials = $request->only('employeeNumber', 'password');
 
-        if (Auth::attempt($credentials)) {
-            return redirect()->intended('dashboard')->withSuccess('Signed in');
+        if (auth()->validate($credentials)) {
+            return response()->json(['status' => 'success']);
         }
   
-        return redirect("login")->withSuccess('Login details are not valid');
+        return abort(401);
     }
 
 
@@ -39,7 +39,6 @@ class authController extends Controller {
       
 
     public function customRegistration(Request $request) {
-
         $request->validate([
             'employeeNumber' => 'required|digits:4|unique:employees|',
             'lastName' => 'required',
@@ -75,13 +74,8 @@ class authController extends Controller {
     }    
     
 
-    public function dashboard()
-    {
-        if(Auth::check()){
-            return view('dashboard');
-        }
-  
-        return redirect("login")->withSuccess('You are not allowed to access');
+    public function dashboard(){  
+        return view('dashboard');
     }
     
 
@@ -89,6 +83,6 @@ class authController extends Controller {
         Session::flush();
         Auth::logout();
   
-        return Redirect('login');
+        return redirect('login');
     }
 }

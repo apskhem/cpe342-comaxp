@@ -26,11 +26,13 @@
                 <div class="title m-b-md"> 
                     Product Store 
                 </div>
+                
                 <div class="links">
                     <a href="{{ config('app.url')}}/employees/create">Create employee</a>
                     <a href="{{ config('app.url')}}/getProductCatalog">Show Catalog</a>
                     <a href="{{ config('app.url')}}/login">Log in Page</a>
                     <a href="{{ config('app.url')}}/registration">Register</a>
+                    <a href="{{ config('app.url')}}/dashboard">Dashboard</a>
                 </div>
             </div>
             </div>

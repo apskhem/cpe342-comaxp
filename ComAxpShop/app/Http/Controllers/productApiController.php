@@ -93,6 +93,29 @@ class productApiController extends Controller
         $index = Product::where('productCode', $credentials)->first();
         $index->delete();
 
-        return response('success');
+        return response('Data deleted');
+    }
+
+    public function updateProduct(Request $request){ // product code is not allowed to change
+
+        $validator = Validator::make(request()->all(), [
+            'productCode' => 'required|min:8|exists:products,productCode',
+            'productLine' => 'exists:productlines,productLine',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(['errors' => $validator->errors()], 401);
+        }
+
+        $input = $request->all();
+
+        $targetProduct = Product::find($input['productCode']);
+        $targetProduct->delete();
+
+        $targetProduct->fill($input);
+        $targetProduct->save();
+
+        return response('Data updated');
     }
 }
+

@@ -26,6 +26,7 @@ Route::post('register', [employeeApiController::class, 'createEmployee'])->name(
 Route::get('product', [productApiController::class, 'showProduct'])->name('product');
 Route::post('product', [productApiController::class, 'addProduct']);
 Route::delete('product', [productApiController::class, 'deleteProduct']);
+Route::post('update-product', [productApiController::class, 'updateProduct']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('dashboard', [authApiController::class, 'dashboardType'])->name('dashboard');

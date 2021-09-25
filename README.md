@@ -1,6 +1,6 @@
-### CPE342-343 Database Systems Final Project
+## CPE342-343 Database Systems Final Project
 
-## Requirements
+### Requirements
 * [A] The website has a products catalog which categorizes by product vendors and product scale. The catalog is displayed publicly. (Group by)
 * [B] Employees can log in with a unique employee number and password. Any password in the system might not be stored as plaintext. (การเก็บ password)
 * [C] Employees in the sales department, who have "sale" in their job title can access a stock-in system (ระบบรับสินค้าเข้า), which records the date, and amount of product in each lot as well as create, update, and delete products. 
@@ -11,8 +11,8 @@
 * [H] The order can have six statuses which are: canceled, disputed (ผู้รับปฏิเสธการรับของ เช่น ของไม่ครบ, เสียหาย, ส่งผิด), in process, on hold, resolved (เคยเกิดปัญหา แต่แก้ไขเรียบร้อยแล้ว), and shipped.
 * [I] There is an employee resource management (ERM) feature. This feature allows sales departments to manage their employees. Such as VP sales can promote and demote between sales managers and sales reps.
 
-## Entity Relationship Diagram
+### Entity Relationship Diagram
 ![ERD](ERD.png)
 
-## Source Links
->> [Front-End Design](https://www.figma.com/file/8FgUeychlmIqn0tGLKPz4A/Plastic-Model-Shop?node-id=0%3A1)
+### Source Links
+> [Front-End Design](https://www.figma.com/file/8FgUeychlmIqn0tGLKPz4A/Plastic-Model-Shop?node-id=0%3A1)

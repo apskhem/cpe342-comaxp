@@ -15,4 +15,4 @@
 ![ERD](ERD.png)
 
 ### Source Links
-> [Front-End Design](https://www.figma.com/file/8FgUeychlmIqn0tGLKPz4A/Plastic-Model-Shop?node-id=0%3A1)
+* [Front-End Design](https://www.figma.com/file/8FgUeychlmIqn0tGLKPz4A/Plastic-Model-Shop?node-id=0%3A1)

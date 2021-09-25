@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\authApiController;
 use App\Http\Controllers\employeeApiController;
 use App\Http\Controllers\productApiController;
+use App\Http\Controllers\customerApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,8 @@ Route::get('product', [productApiController::class, 'showProduct'])->name('produ
 Route::post('product', [productApiController::class, 'addProduct']);
 Route::delete('product', [productApiController::class, 'deleteProduct']);
 Route::post('update-product', [productApiController::class, 'updateProduct']);
+
+Route::post('customer', [customerApiController::class, 'addCustomer'])->name('customer');
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('dashboard', [authApiController::class, 'dashboardType'])->name('dashboard');

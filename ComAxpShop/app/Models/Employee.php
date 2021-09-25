@@ -21,7 +21,6 @@ class Employee extends Authenticatable{
     const CREATED_AT = null;
 
     protected $fillable = [
-        'employeeNumber',
         'lastName',
         'firstName',
         'extension',

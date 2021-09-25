@@ -10,7 +10,7 @@ class Product extends Model {
     protected $table = "products";
 
     protected $primaryKey = 'productCode';
-
+    
     const UPDATED_AT = null;
     const CREATED_AT = null;
 

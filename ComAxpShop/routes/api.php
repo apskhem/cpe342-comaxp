@@ -7,6 +7,7 @@ use App\Http\Controllers\authApiController;
 use App\Http\Controllers\employeeApiController;
 use App\Http\Controllers\productApiController;
 use App\Http\Controllers\customerApiController;
+use App\Http\Controllers\orderApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,8 @@ Route::delete('product', [productApiController::class, 'deleteProduct']);
 Route::post('update-product', [productApiController::class, 'updateProduct']);
 
 Route::post('customer', [customerApiController::class, 'addCustomer'])->name('customer');
+
+Route::post('order', [orderApiController::class, 'addTransaction'])->name('order');
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('dashboard', [authApiController::class, 'dashboardType'])->name('dashboard');

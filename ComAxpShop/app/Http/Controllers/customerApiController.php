@@ -16,8 +16,13 @@ class customerApiController extends Controller
             'contactFirstName' => 'required',
             'phone' => 'required',
             'addressLine1' => 'required',
+            // 'addressLine2' => 'nullable',
             'city' => 'required',
+            // 'state' => 'nullable',
+            // 'postalCode' => 'nullable',
             'country' => 'required',
+            // 'salesRepEmployeeNumber' => 'nullable',
+            // 'creditLimit' => 'nullable'
         ]);
 
         if($validator->fails()){
@@ -28,23 +33,23 @@ class customerApiController extends Controller
 
         $fetch = $this->addToDB($customer);
     
-        return response()->json(['message' => 'success']);
+        return response()->json(['message' => $customer]);
     }
 
-    public function addToDB($employeeData){
+    public function addToDB($customerData){
         return Customer::create([
-            'customerName' => $employeeData['customerName'],
-            'contactLastName' => $employeeData['contactLastName'],
-            'contactFirstName' => $employeeData['contactFirstName'],
-            'phone' => $employeeData['phone'],
-            'addressLine1' => $employeeData['addressLine1'],
-            'addressLine2' => $employeeData['addressLine2'],
-            'city' => $employeeData['city'],
-            'state' => $employeeData['state'],
-            'postalCode' => $employeeData['postalCode'],
-            'country' => $employeeData['country'],
-            'salesRepEmployeeNumber' => $employeeData['salesRepEmployeeNumber'],
-            'creditLimit' => $employeeData['creditLimit']
+            'customerName' => $customerData['customerName'],
+            'contactLastName' => $customerData['contactLastName'],
+            'contactFirstName' => $customerData['contactFirstName'],
+            'phone' => $customerData['phone'],
+            'addressLine1' => $customerData['addressLine1'],
+            'addressLine2' => $customerData['addressLine2'],
+            'city' => $customerData['city'],
+            'state' => $customerData['state'],
+            'postalCode' => $customerData['postalCode'],
+            'country' => $customerData['country'],
+            'salesRepEmployeeNumber' => $customerData['salesRepEmployeeNumber'],
+            'creditLimit' => $customerData['creditLimit']
           ]);
     }
 }

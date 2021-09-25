@@ -10,9 +10,9 @@
 * `[G]` A payment system is an old-school method. After the order was placed, customers will make payments using a money cheque. Then, employees will note the payment cheque in a table "payments." Once a package is ready, the order status will change to "shipped."
 * `[H]` The order can have six statuses which are: canceled, disputed (ผู้รับปฏิเสธการรับของ เช่น ของไม่ครบ, เสียหาย, ส่งผิด), in process, on hold, resolved (เคยเกิดปัญหา แต่แก้ไขเรียบร้อยแล้ว), and shipped.
 * `[I]` There is an employee resource management (ERM) feature. This feature allows sales departments to manage their employees. Such as VP sales can promote and demote between sales managers and sales reps.
---
+
 ### Entity Relationship Diagram
 ![ERD](ERD.png)
---
+
 ### Source Links
 * [Front-End Design](https://www.figma.com/file/8FgUeychlmIqn0tGLKPz4A/Plastic-Model-Shop?node-id=0%3A1)

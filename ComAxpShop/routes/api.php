@@ -23,7 +23,10 @@ use App\Http\Controllers\orderApiController;
 Route::get('login', [authApiController::class, 'login'])->name('login');
 Route::post('login', [authApiController::class, 'checkLogin']);
 
-Route::post('register', [employeeApiController::class, 'createEmployee'])->name('register');
+Route::get('employee', [employeeApiController::class, 'getEmployee'])->name('employee');
+Route::post('employee', [employeeApiController::class, 'createEmployee']);
+Route::delete('employee', [employeeApiController::class, 'deleteEmployee']);
+Route::post('update-employee', [employeeApiController::class, 'updateEmployee']);
 
 Route::get('product', [productApiController::class, 'getProduct'])->name('product');
 Route::post('product', [productApiController::class, 'addProduct']);

@@ -108,6 +108,22 @@ class orderApiController extends Controller
         ]);
     }
 
+    public function deleteTransaction(Request $request){
+        $validator = Validator::make(request()->all(), [
+            'orderNumber' => 'required|exists:orders,orderNumber',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(['errors' => $validator->errors()], 401);
+        }
+
+        $input = $request->only('orderNumber');
+        $targetOrder = Order::where('orderNumber', $input)->first();
+        $targetOrder->delete();
+
+        return response('delete completed');
+    }
+
     public function productValidator($products){
         $productArr = explode(',', $products['productCode']);
         $quantityArr = explode(',', $products['quantityOrdered']);

@@ -40,6 +40,7 @@ Route::post('update-customer', [customerApiController::class, 'updateCustomer'])
 
 Route::get('order', [orderApiController::class, 'getAllTransaction'])->name('order');
 Route::post('order', [orderApiController::class, 'addTransaction']);
+Route::delete('order', [orderApiController::class, 'deleteTransaction']);
 
 Route::post('increase-point', [customerApiController::class, 'increasePoint']);
 

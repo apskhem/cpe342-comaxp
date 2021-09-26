@@ -26,6 +26,8 @@ class orderApiController extends Controller
         $products = $request->only(['productCode', 'quantityOrdered', 'priceEach', 'orderLineNumber']);
         $input = $request->except(['productCode', 'quantityOrdered', 'priceEach', 'orderLineNumber']);
 
+        $validStatus = ['canceled', 'disputed', 'in process', 'on hold', 'shipped'];
+
         // validate
         
         $this->productValidator($products);
@@ -33,7 +35,7 @@ class orderApiController extends Controller
         $generalValidator = Validator::make($input, [
             'requiredDate' => 'required|date_format:Y-m-d|after_or_equal:today',
             'shippedDate' => 'date_format:Y-m-d|after_or_equal:today|before_or_equal:requiredDate',
-            'status' => 'required',
+            'status' => 'in:'.implode(',', $validStatus),
             'comments' => 'nullable',
             'customerNumber' => 'required|exists:customers,customerNumber',
             'discountCode' => 'nullable|exists:discountcodes,discountCode',
@@ -122,6 +124,26 @@ class orderApiController extends Controller
         $targetOrder->delete();
 
         return response('delete completed');
+    }
+
+    public function updateTransaction(Request $request){
+        $validStatus = ['canceled', 'disputed', 'in process', 'on hold', 'shipped'];
+
+        $validator = Validator::make(request()->all(), [
+            'orderNumber' => 'required|exists:orders,orderNumber',
+            'status' => 'in:'.implode(',', $validStatus),
+        ]);
+
+        if($validator->fails()){
+            return response()->json(['errors' => $validator->errors()], 401);
+        }
+
+        $input = $request->all();
+
+        $targerOrder = Order::find($input['orderNumber']);
+        $targerOrder->fill($input)->update();
+
+        return response('Data updated');
     }
 
     public function productValidator($products){

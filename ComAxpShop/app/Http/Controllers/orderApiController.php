@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 use Carbon;
 use Validator;
-use CodeController;
 
 use App\Models\Order;
 use App\Models\OrderDetail;
@@ -14,25 +14,36 @@ use App\Http\Controllers\customerApiController;
 
 class orderApiController extends Controller
 {
+    public function getAllTransaction(){
+        $transactions = DB::table('orders')
+                        ->join('orderdetails', 'orders.orderNumber', '=', 'orderdetails.orderNumber')
+                        ->orderBy('orders.orderNumber', 'asc')
+                        ->get();
+        return $transactions;
+    }
+
     public function addTransaction(Request $request){
-        $validator = Validator::make(request()->all(), [
+        $products = $request->only(['productCode', 'quantityOrdered', 'priceEach', 'orderLineNumber']);
+        $input = $request->except(['productCode', 'quantityOrdered', 'priceEach', 'orderLineNumber']);
+
+        // validate
+        
+        $this->productValidator($products);
+
+        $generalValidator = Validator::make($input, [
             'requiredDate' => 'required|date_format:Y-m-d|after_or_equal:today',
             'shippedDate' => 'date_format:Y-m-d|after_or_equal:today|before_or_equal:requiredDate',
             'status' => 'required',
             'comments' => 'nullable',
             'customerNumber' => 'required|exists:customers,customerNumber',
             'discountCode' => 'nullable|exists:discountcodes,discountCode',
-            'productCode' => 'required|exists:products,productCode',
-            'quantityOrdered' => 'required|integer',
-            'priceEach' => 'required|numeric',
-            'orderLineNumber' => 'required|integer',
         ]);
 
-        if($validator->fails()){
-            return response()->json(['errors' => $validator->errors()], 401);
+        if($generalValidator->fails()){
+            return response()->json(['errors' => $generalValidator->errors()], 401);
         }
 
-        // add data to database
+        // order
 
         $dateToday = Carbon\Carbon::now()->setTimezone('Asia/Phnom_Penh')->format('Y-m-d');
 
@@ -41,25 +52,39 @@ class orderApiController extends Controller
         $order['orderDate'] = $dateToday;
         $fetch = $this->addOrderToDB($order);
 
-        $orderDetail = $request->only(['productCode', 'priceEach', 'quantityOrdered', 'orderLineNumber']);
-        $orderDetail['orderNumber'] = $fetch['orderNumber'];
+        // order detail and calculate gained point
 
-        $fetch2 = $this->addOrderDetailToDB($orderDetail);
+        $productArr = explode(',', $products['productCode']);
+        $quantityArr = explode(',', $products['quantityOrdered']);
+        $priceArr = explode(',', $products['priceEach']);
+        $orderLineArr = explode(',', $products['orderLineNumber']);
+        $productCount = count($productArr);
 
-        // calculate member point
+        $orderNumber = $fetch['orderNumber'];
 
-        $input = $request->only(['quantityOrdered', 'priceEach']);
-        $totalPaid = $input['quantityOrdered']*$input['priceEach'];
-        $object = [
+        $totalPaid = 0;
+
+        for($i = 0; $i < $productCount; $i++){
+            $orderDetail = [
+                'orderNumber' => $orderNumber,
+                'productCode' => $productArr[$i],
+                'quantityOrdered' => $quantityArr[$i],
+                'priceEach' => $priceArr[$i],
+                'orderLineNumber' => $orderLineArr[$i],
+            ];
+            $this->addOrderDetailToDB($orderDetail);
+
+            $totalPaid += $orderDetail['quantityOrdered']*$orderDetail['priceEach'];
+        }
+
+        $passer = [
             'customerNumber' => $order['customerNumber'],
             'totalPaid' => $totalPaid,
         ];
-
-        $pointGained = customerApiController::increasePoint($object);
+        $pointGained = customerApiController::increasePoint($passer);
 
         return response()->json(['point gained' => $pointGained]);
     }
-
 
     public function addOrderToDB($orderData){
         return Order::create([
@@ -81,5 +106,34 @@ class orderApiController extends Controller
             'priceEach' => $orderDetailData['priceEach'],
             'orderLineNumber' => $orderDetailData['orderLineNumber'],
         ]);
+    }
+
+    public function productValidator($products){
+        $productArr = explode(',', $products['productCode']);
+        $quantityArr = explode(',', $products['quantityOrdered']);
+        $priceArr = explode(',', $products['priceEach']);
+        $orderLineArr = explode(',', $products['orderLineNumber']);
+        $productCount = count($productArr);
+
+
+        for($i = 0; $i < $productCount; $i++){
+            $product = [
+                'productCode' => $productArr[$i],
+                'quantityOrdered' => $quantityArr[$i],
+                'priceEach' => $priceArr[$i],
+                'orderLineNumber' => $orderLineArr[$i],
+            ];
+
+            $productValidator = Validator::make($product, [
+                'productCode' => 'required|exists:products,productCode',
+                'quantityOrdered' => 'required|integer',
+                'priceEach' => 'required|numeric',
+                'orderLineNumber' => 'required|integer',
+            ]);
+
+            if($productValidator->fails()){
+                return response()->json(['errors' => $productValidator->errors()], 401);
+            }
+        }
     }
 }

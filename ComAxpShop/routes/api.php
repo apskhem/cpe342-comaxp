@@ -38,8 +38,8 @@ Route::post('customer', [customerApiController::class, 'addCustomer']);
 Route::delete('customer', [customerApiController::class, 'deleteCustomer']);
 Route::post('update-customer', [customerApiController::class, 'updateCustomer']);
 
-
-Route::post('order', [orderApiController::class, 'addTransaction'])->name('order');
+Route::get('order', [orderApiController::class, 'getAllTransaction'])->name('order');
+Route::post('order', [orderApiController::class, 'addTransaction']);
 
 Route::post('increase-point', [customerApiController::class, 'increasePoint']);
 

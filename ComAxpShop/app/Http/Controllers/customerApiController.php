@@ -31,7 +31,8 @@ class customerApiController extends Controller
             'postalCode' => 'nullable',
             'country' => 'required',
             'salesRepEmployeeNumber' => 'nullable',
-            'creditLimit' => 'nullable'
+            'creditLimit' => 'nullable',
+            'memberPoint' => 'nullable',
         ]);
 
         if($validator->fails()){
@@ -39,6 +40,8 @@ class customerApiController extends Controller
         }
 
         $customer = $request->all();
+
+        if($customer['memberPoint'] == null) $customer['memberPoint'] = 0;
 
         $fetch = $this->addToDB($customer);
     
@@ -58,7 +61,8 @@ class customerApiController extends Controller
             'postalCode' => $customerData['postalCode'],
             'country' => $customerData['country'],
             'salesRepEmployeeNumber' => $customerData['salesRepEmployeeNumber'],
-            'creditLimit' => $customerData['creditLimit']
+            'creditLimit' => $customerData['creditLimit'],
+            'memberPoint' => $customerData['memberPoint'],
           ]);
     }
 
@@ -94,7 +98,8 @@ class customerApiController extends Controller
 
         return response('Data updated');
     }
-
+    
+    // ----- input is not finish yet ------
     public function increasePoint(Request $request){
         $input = $request->all();
 
@@ -104,6 +109,6 @@ class customerApiController extends Controller
         $targetCustomer->memberPoint += $increasedPoint;
         $targetCustomer->update();
 
-        return $targetCustomer;
+        return $increasedPoint;
     }
 }

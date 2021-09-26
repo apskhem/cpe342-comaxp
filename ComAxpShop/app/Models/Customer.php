@@ -27,5 +27,6 @@ class Customer extends Model
         'country',
         'salesRepEmployeeNumber',
         'creditLimit',
+        'memberPoint',
     ];
 }

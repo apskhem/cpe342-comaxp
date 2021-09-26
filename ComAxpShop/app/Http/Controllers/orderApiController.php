@@ -10,6 +10,7 @@ use CodeController;
 
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Http\Controllers\customerApiController;
 
 class orderApiController extends Controller
 {
@@ -31,6 +32,8 @@ class orderApiController extends Controller
             return response()->json(['errors' => $validator->errors()], 401);
         }
 
+        // add data to database
+
         $dateToday = Carbon\Carbon::now()->setTimezone('Asia/Phnom_Penh')->format('Y-m-d');
 
         $order = $request->only(['requiredDate', 'shippedDate', 'status', 
@@ -42,8 +45,19 @@ class orderApiController extends Controller
         $orderDetail['orderNumber'] = $fetch['orderNumber'];
 
         $fetch2 = $this->addOrderDetailToDB($orderDetail);
-    
-        return response()->json(['message' => 'success']);
+
+        // calculate member point
+
+        $input = $request->only(['quantityOrdered', 'priceEach']);
+        $totalPaid = $input['quantityOrdered']*$input['priceEach'];
+        $object = [
+            'customerNumber' => $order['customerNumber'],
+            'totalPaid' => $totalPaid,
+        ];
+
+        $pointGained = customerApiController::increasePoint($object);
+
+        return response()->json(['point gained' => $pointGained]);
     }
 
 

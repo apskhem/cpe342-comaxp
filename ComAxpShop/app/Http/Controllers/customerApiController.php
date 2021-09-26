@@ -100,10 +100,9 @@ class customerApiController extends Controller
     }
     
     // ----- input is not finish yet ------
-    public function increasePoint(Request $request){
-        $input = $request->all();
+    static function increasePoint($input){
 
-        $increasedPoint = (int) ($input['totalSpend']/100)*3;
+        $increasedPoint = (int) ($input['totalPaid']/100)*3;
 
         $targetCustomer = Customer::find($input['customerNumber']);
         $targetCustomer->memberPoint += $increasedPoint;

@@ -52,4 +52,16 @@ class customerApiController extends Controller
             'creditLimit' => $customerData['creditLimit']
           ]);
     }
+
+    public function increasePoint(Request $request){
+        $input = $request->all();
+
+        $increasedPoint = (int) ($input['totalSpend']/100)*3;
+
+        $targetCustomer = Customer::find($input['customerNumber']);
+        $targetCustomer->memberPoint += $increasedPoint;
+        $targetCustomer->update();
+
+        return $targetCustomer;
+    }
 }

@@ -110,10 +110,7 @@ class productApiController extends Controller
         $input = $request->all();
 
         $targetProduct = Product::find($input['productCode']);
-        $targetProduct->delete();
-
-        $targetProduct->fill($input);
-        $targetProduct->save();
+        $targetProduct->fill($input)->update();
 
         return response('Data updated');
     }

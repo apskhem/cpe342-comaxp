@@ -34,6 +34,8 @@ Route::post('customer', [customerApiController::class, 'addCustomer'])->name('cu
 
 Route::post('order', [orderApiController::class, 'addTransaction'])->name('order');
 
+Route::post('increase-point', [customerApiController::class, 'increasePoint']);
+
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('dashboard', [authApiController::class, 'dashboardType'])->name('dashboard');
 });

@@ -3,12 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 use Validator;
 
 use App\Models\Customer;
 
 class customerApiController extends Controller
 {
+    public function getCustomer(){
+        $customers = DB::table('customers')
+                        ->orderBy('customerNumber', 'asc')
+                        ->get();
+        return $customers;
+    }
+    
     public function addCustomer(Request $request){
         $validator = Validator::make(request()->all(), [
             'customerName' => 'required',
@@ -16,13 +25,13 @@ class customerApiController extends Controller
             'contactFirstName' => 'required',
             'phone' => 'required',
             'addressLine1' => 'required',
-            // 'addressLine2' => 'nullable',
+            'addressLine2' => 'nullable',
             'city' => 'required',
-            // 'state' => 'nullable',
-            // 'postalCode' => 'nullable',
+            'state' => 'nullable',
+            'postalCode' => 'nullable',
             'country' => 'required',
-            // 'salesRepEmployeeNumber' => 'nullable',
-            // 'creditLimit' => 'nullable'
+            'salesRepEmployeeNumber' => 'nullable',
+            'creditLimit' => 'nullable'
         ]);
 
         if($validator->fails()){
@@ -51,6 +60,39 @@ class customerApiController extends Controller
             'salesRepEmployeeNumber' => $customerData['salesRepEmployeeNumber'],
             'creditLimit' => $customerData['creditLimit']
           ]);
+    }
+
+    public function deleteCustomer(Request $request){
+        $validator = Validator::make(request()->all(), [
+            'customerNumber' => 'required|exists:customers,customerNumber',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(['errors' => $validator->errors()], 401);
+        }
+
+        $input = $request->only('customerNumber');
+        $targetCustomer = Customer::where('customerNumber', $input)->first();
+        $targetCustomer->delete();
+
+        return response('delete completed');
+    }
+
+    public function updateCustomer(Request $request){
+        $validator = Validator::make(request()->all(), [
+            'customerNumber' => 'required|exists:customers,customerNumber',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(['errors' => $validator->errors()], 401);
+        }
+
+        $input = $request->all();
+
+        $targetCustomer = Customer::find($input['customerNumber']);
+        $targetCustomer->fill($input)->update();
+
+        return response('Data updated');
     }
 
     public function increasePoint(Request $request){

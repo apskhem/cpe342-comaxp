@@ -10,7 +10,7 @@ use Validator;
 
 class productApiController extends Controller
 {
-    public function showProduct(Request $request){
+    public function getProduct(Request $request){
         $type = $request['type'];
 
         switch($type){
@@ -88,10 +88,17 @@ class productApiController extends Controller
     }
 
     public function deleteProduct(Request $request){
+        $validator = Validator::make(request()->all(), [
+            'productCode' => 'required|exists:products,productCode',
+        ]);
 
-        $credentials = $request->only('productCode');
-        $index = Product::where('productCode', $credentials)->first();
-        $index->delete();
+        if($validator->fails()){
+            return response()->json(['errors' => $validator->errors()], 401);
+        }
+
+        $input = $request->only('productCode');
+        $targetProduct = Product::where('productCode', $input)->first();
+        $targetProduct->delete();
 
         return response('Data deleted');
     }
@@ -99,7 +106,7 @@ class productApiController extends Controller
     public function updateProduct(Request $request){ // product code is not allowed to change
 
         $validator = Validator::make(request()->all(), [
-            'productCode' => 'required|min:8|exists:products,productCode',
+            'productCode' => 'required|exists:products,productCode',
             'productLine' => 'exists:productlines,productLine',
         ]);
 

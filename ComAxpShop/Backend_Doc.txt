@@ -193,7 +193,7 @@ body :
     customerNumber : required | exist in customerNumber
     discountCode : nullable | exist in discountCode
 return :
-    json message : gainedPoint
+    json message : success
     
 -----------------------
 /order
@@ -216,6 +216,47 @@ body :
     comments : nullable
     customerNumber : nullable | exist in customerNumber
     discountCode : nullable | exist in discountCode
+return :
+    json message : success
+    
+====== Payment ======
+
+/payment
+
+method : GET
+body : 
+return :
+    array object
+    
+-----------------------
+/payment
+
+method : POST
+body : 
+    checkNumber : required
+    amount : required | numeric
+    orderNumber : required | exist in orderNumber
+return :
+    json message : gainedPoint
+    
+-----------------------
+/payment
+
+method : DELETE
+body : 
+    orderNumber : required | exist in orderNumber
+return :
+    json message : success
+
+-----------------------
+/update-payment
+
+method : POST
+body : 
+    paymentDate : nullable
+    checkNumber : nullable
+    amount : nullable | numeric
+    orderNumber : required | exist in orderNumber
 return :
     json message : success
     

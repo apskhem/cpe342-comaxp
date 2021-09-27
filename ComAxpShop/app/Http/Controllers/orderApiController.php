@@ -10,7 +10,6 @@ use Validator;
 
 use App\Models\Order;
 use App\Models\OrderDetail;
-use App\Http\Controllers\customerApiController;
 
 class orderApiController extends Controller
 {
@@ -64,7 +63,6 @@ class orderApiController extends Controller
 
         $orderNumber = $fetch['orderNumber'];
 
-        $totalPaid = 0;
 
         for($i = 0; $i < $productCount; $i++){
             $orderDetail = [
@@ -75,17 +73,9 @@ class orderApiController extends Controller
                 'orderLineNumber' => $orderLineArr[$i],
             ];
             $this->addOrderDetailToDB($orderDetail);
-
-            $totalPaid += $orderDetail['quantityOrdered']*$orderDetail['priceEach'];
         }
 
-        $passer = [
-            'customerNumber' => $order['customerNumber'],
-            'totalPaid' => $totalPaid,
-        ];
-        $pointGained = customerApiController::increasePoint($passer);
-
-        return response()->json(['point gained' => $pointGained]);
+        return response('success');
     }
 
     public function addOrderToDB($orderData){

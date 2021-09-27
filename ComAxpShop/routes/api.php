@@ -8,6 +8,7 @@ use App\Http\Controllers\employeeApiController;
 use App\Http\Controllers\productApiController;
 use App\Http\Controllers\customerApiController;
 use App\Http\Controllers\orderApiController;
+use App\Http\Controllers\paymentApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,8 +21,7 @@ use App\Http\Controllers\orderApiController;
 |
 */
 
-Route::get('login', [authApiController::class, 'login'])->name('login');
-Route::post('login', [authApiController::class, 'checkLogin']);
+Route::get('login', [authApiController::class, 'checkLogin'])->name('login');
 
 Route::get('employee', [employeeApiController::class, 'getEmployee'])->name('employee');
 Route::post('employee', [employeeApiController::class, 'createEmployee']);
@@ -38,12 +38,15 @@ Route::post('customer', [customerApiController::class, 'addCustomer']);
 Route::delete('customer', [customerApiController::class, 'deleteCustomer']);
 Route::post('update-customer', [customerApiController::class, 'updateCustomer']);
 
-Route::get('order', [orderApiController::class, 'getAllTransaction'])->name('order');
-Route::post('order', [orderApiController::class, 'addTransaction']);
-Route::delete('order', [orderApiController::class, 'deleteTransaction']);
-Route::post('update-order', [orderApiController::class, 'updateTransaction']);
+Route::get('order', [orderApiController::class, 'getAllOrder'])->name('order');
+Route::post('order', [orderApiController::class, 'addOrder']);
+Route::delete('order', [orderApiController::class, 'deleteOrder']);
+Route::post('update-order', [orderApiController::class, 'updateOrder']);
 
-Route::post('increase-point', [customerApiController::class, 'increasePoint']);
+Route::get('payment', [paymentApiController::class, 'getAllTransaction'])->name('payment');
+Route::post('payment', [paymentApiController::class, 'addTransaction']);
+Route::delete('payment', [paymentApiController::class, 'deleteTransaction']);
+Route::post('update-payment', [paymentApiController::class, 'updateTransaction']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('dashboard', [authApiController::class, 'dashboardType'])->name('dashboard');

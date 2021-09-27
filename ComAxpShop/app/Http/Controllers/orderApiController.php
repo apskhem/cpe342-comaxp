@@ -14,19 +14,19 @@ use App\Http\Controllers\customerApiController;
 
 class orderApiController extends Controller
 {
-    public function getAllTransaction(){
-        $transactions = DB::table('orders')
+    public function getAllOrder(){
+        $orders = DB::table('orders')
                         ->join('orderdetails', 'orders.orderNumber', '=', 'orderdetails.orderNumber')
                         ->orderBy('orders.orderNumber', 'asc')
                         ->get();
-        return $transactions;
+        return $orders;
     }
 
-    public function addTransaction(Request $request){
+    public function addOrder(Request $request){
         $products = $request->only(['productCode', 'quantityOrdered', 'priceEach', 'orderLineNumber']);
         $input = $request->except(['productCode', 'quantityOrdered', 'priceEach', 'orderLineNumber']);
 
-        $validStatus = ['canceled', 'disputed', 'in process', 'on hold', 'shipped'];
+        $validStatus = ['canceled', 'disputed', 'in process', 'on hold', 'resloved','shipped'];
 
         // validate
         
@@ -110,7 +110,7 @@ class orderApiController extends Controller
         ]);
     }
 
-    public function deleteTransaction(Request $request){
+    public function deleteOrder(Request $request){
         $validator = Validator::make(request()->all(), [
             'orderNumber' => 'required|exists:orders,orderNumber',
         ]);
@@ -126,8 +126,8 @@ class orderApiController extends Controller
         return response('delete completed');
     }
 
-    public function updateTransaction(Request $request){
-        $validStatus = ['canceled', 'disputed', 'in process', 'on hold', 'shipped'];
+    public function updateOrder(Request $request){
+        $validStatus = ['canceled', 'disputed', 'in process', 'on hold', 'resloved', 'shipped'];
 
         $validator = Validator::make(request()->all(), [
             'orderNumber' => 'required|exists:orders,orderNumber',

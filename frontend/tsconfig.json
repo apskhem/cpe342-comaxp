@@ -1,32 +1,26 @@
 {
+  "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "downlevelIteration": true,
-    "allowJs": true,
-    "skipLibCheck": true,
+    "target": "ESNEXT",
+    "lib": ["ESNEXT", "dom"],
+    "module": "ESNEXT",
+    "moduleResolution": "node",
+    "sourceMap": true,
+
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
     "noImplicitReturns": true,
+    "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
-    "noUncheckedIndexedAccess": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    
     "removeComments": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "strictNullChecks": true
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src/**/*", "src/node_modules"],
+  "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
 }

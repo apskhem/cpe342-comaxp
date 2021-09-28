@@ -1,7 +1,9 @@
 <script lang="ts">
   import { Router, Link, Route } from "svelte-routing";
-  import Home from "./routes/Home.svelte";
   import Header from "./components/Header.svelte";
+  import Footer from "./components/Footer.svelte";
+  import Home from "./routes/Home.svelte";
+  import Login from "./routes/Login.svelte";
 
   export let name: string;
 </script>
@@ -10,7 +12,9 @@
   <Header />
   <Router>
     <Route path="/" component="{Home}" />
+    <Route path="/login" component="{Login}" />
   </Router>
+  <Footer />
 </template>
 
 <style lang="scss" global>

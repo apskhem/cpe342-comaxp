@@ -30,4 +30,8 @@ class Employee extends Authenticatable{
         'jobTitle',
         'password'
     ];
+
+    public function scopeExclude($query, $value = []) {
+        return $query->select(array_diff($this->columns, (array) $value));
+    }
 }

@@ -64,13 +64,13 @@ class productApiController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(['errors' => $validator->errors()], 401);
+            return response()->json(['errors' => $validator->errors()], 400);
         }
         $product = $request->all();
 
         $fetch = $this->addToDB($product);
     
-        return response()->json(['message' => 'success']);
+        return response()->json(['message' => 'add product success']);
     }
 
     public function addToDB($productData){
@@ -93,14 +93,14 @@ class productApiController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(['errors' => $validator->errors()], 401);
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
         $input = $request->only('productCode');
         $targetProduct = Product::where('productCode', $input)->first();
         $targetProduct->delete();
 
-        return response('Data deleted');
+        return response()->json(['message' => 'delete product success']);
     }
 
     public function updateProduct(Request $request){ // product code is not allowed to change
@@ -111,7 +111,7 @@ class productApiController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(['errors' => $validator->errors()], 401);
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
         $input = $request->all();

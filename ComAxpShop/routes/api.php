@@ -26,12 +26,12 @@ Route::get('login', [authApiController::class, 'checkLogin'])->name('login');
 Route::get('employee', [employeeApiController::class, 'getEmployee'])->name('employee');
 Route::post('employee', [employeeApiController::class, 'createEmployee']);
 Route::delete('employee', [employeeApiController::class, 'deleteEmployee']);
-Route::post('update-employee', [employeeApiController::class, 'updateEmployee']);
+Route::put('employee', [employeeApiController::class, 'updateEmployee']);
 
 Route::get('product', [productApiController::class, 'getProduct'])->name('product');
 Route::post('product', [productApiController::class, 'addProduct']);
 Route::delete('product', [productApiController::class, 'deleteProduct']);
-Route::post('update-product', [productApiController::class, 'updateProduct']);
+Route::put('product', [productApiController::class, 'updateProduct']);
 
 Route::get('customer', [customerApiController::class, 'getCustomer'])->name('customer');
 Route::post('customer', [customerApiController::class, 'addCustomer']);

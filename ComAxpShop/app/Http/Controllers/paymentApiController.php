@@ -77,6 +77,12 @@ class paymentApiController extends Controller
         $targetTransaction = Payment::where('orderNumber', $input)->first();
         $targetTransaction->delete();
 
+        $passer = [
+            'customerNumber' => $transaction['customerNumber'],
+            'totalPaid' => $transaction['amount'],
+        ];
+        $pointGained = customerApiController::increasePoint($passer);
+
         return response('delete completed');
     }
 

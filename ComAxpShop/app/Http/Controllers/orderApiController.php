@@ -10,6 +10,7 @@ use Validator;
 
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\Product;
 
 class orderApiController extends Controller
 {
@@ -29,7 +30,7 @@ class orderApiController extends Controller
 
         // validate
         
-        $this->productValidator($products);
+        $productValidator = $this->productValidator($products);
 
         $generalValidator = Validator::make($input, [
             'requiredDate' => 'required|date_format:Y-m-d|after_or_equal:today',
@@ -41,7 +42,11 @@ class orderApiController extends Controller
         ]);
 
         if($generalValidator->fails()){
-            return response()->json(['errors' => $generalValidator->errors()], 401);
+            return response()->json(['errors' => $generalValidator->errors()], 400);
+        }
+
+        if($productValidator->fails){
+            return response()->json($productValidator->errors, 400);
         }
 
         // order
@@ -53,7 +58,7 @@ class orderApiController extends Controller
         $order['orderDate'] = $dateToday;
         $fetch = $this->addOrderToDB($order);
 
-        // order detail and calculate gained point
+        // // order detail and calculate gained point
 
         $productArr = explode(',', $products['productCode']);
         $quantityArr = explode(',', $products['quantityOrdered']);
@@ -62,7 +67,6 @@ class orderApiController extends Controller
         $productCount = count($productArr);
 
         $orderNumber = $fetch['orderNumber'];
-
 
         for($i = 0; $i < $productCount; $i++){
             $orderDetail = [
@@ -75,7 +79,7 @@ class orderApiController extends Controller
             $this->addOrderDetailToDB($orderDetail);
         }
 
-        return response('success');
+        return response()->json(['message' => 'add order success']);
     }
 
     public function addOrderToDB($orderData){
@@ -143,7 +147,6 @@ class orderApiController extends Controller
         $orderLineArr = explode(',', $products['orderLineNumber']);
         $productCount = count($productArr);
 
-
         for($i = 0; $i < $productCount; $i++){
             $product = [
                 'productCode' => $productArr[$i],
@@ -159,9 +162,34 @@ class orderApiController extends Controller
                 'orderLineNumber' => 'required|integer',
             ]);
 
+            $returnedObject = (object) [
+                'fails' => false,
+                'errors',
+            ];
+
             if($productValidator->fails()){
-                return response()->json(['errors' => $productValidator->errors()], 401);
+                $returnedObject->fails = true;
+                $returnedObject->errors = $productValidator->errors();
+                return $returnedObject;
+            }
+
+            $isAvailable = $this->isAvailable($product);
+            if(!$isAvailable){
+                $returnedObject->fails = true;
+                $returnedObject->errors = ['quantityOrdered' => "Product amount is not enough for purchase"];
+                return $returnedObject;
             }
         }
+        return $returnedObject;
+    }
+
+    public function isAvailable($product){
+        $targetProduct = Product::find($product['productCode']);
+
+        if($targetProduct->quantityInStock - $product['quantityOrdered'] < 0){
+            return false;
+        }
+        return true;
     }
 }
+

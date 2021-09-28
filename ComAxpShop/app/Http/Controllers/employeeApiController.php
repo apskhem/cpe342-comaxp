@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 use App\Models\Employee;
 use Validator;
@@ -12,9 +11,14 @@ use Validator;
 class employeeApiController extends Controller
 {
     public function getEmployee(){
-        $employees = DB::table('employees')
+        $employees = Employee::query()
                         ->orderBy('employeeNumber', 'asc')
                         ->get();
+
+        foreach($employees as $employee) {
+            $employee->makeHidden(['password']);
+        }
+
         return $employees;
     }
 
@@ -31,14 +35,14 @@ class employeeApiController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(['errors' => $validator->errors()], 401);
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
         $employee = $request->all();
 
         $fetch = $this->addToDB($employee);
     
-        return response()->json(['message' => 'success']);
+        return response()->json(['message' => 'add employee success']);
     }
 
     public function addToDB($employeeData){
@@ -60,14 +64,14 @@ class employeeApiController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(['errors' => $validator->errors()], 401);
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
         $input = $request->only('employeeNumber');
         $targetEmployee = Employee::where('employeeNumber', $input)->first();
         $targetEmployee->delete();
 
-        return response('delete completed');
+        return response()->json(['message' => 'delete employee success']);
     }
 
     public function updateEmployee(Request $request){

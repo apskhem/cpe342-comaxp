@@ -3,14 +3,40 @@
 
   let isRequesting = false;
 
-  const handleSubmit = (e: { currentTarget: HTMLFormElement }) => {
+  const encodeForm = (formData: FormData) => {
+    const entries: [string, string][] = [];
+
+    formData.forEach((v, k) => entries.push([k, v as string]));
+
+    const res = entries
+      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+      .join("&");
+
+    return res;
+  }
+
+  const handleSubmit = async (e: { currentTarget: HTMLFormElement }) => {
     if (isRequesting) {
       return;
     }
 
-    const formData = new FormData(e.currentTarget);
-
     isRequesting = true;
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      const encoded = encodeForm(formData);
+
+      const res = await fetch(`https://comaxp.herokuapp.com/api/login?${encoded}`);
+      const data: Response.Login = await res.json();
+
+      console.log(data);
+    }
+    catch (err) {
+
+    }
+    finally {
+      isRequesting = false;
+    }
   };
 </script>
 
@@ -29,7 +55,7 @@
             <input id="login-username" name="employeeNumber" type="text" disabled={isRequesting} required />
           </div>
           <div class="input-label">
-            <label for="login-password">Username</label>
+            <label for="login-password">Password</label>
             <input id="login-password" name="password" type="password" disabled={isRequesting} required />
           </div>
         </div>

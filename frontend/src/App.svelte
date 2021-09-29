@@ -30,6 +30,7 @@
   @import url(https://fonts.googleapis.com/css2?family=Roboto&display=swap);
   
   main {
+    position: relative;
     min-height: calc(100vh - 174px - 64px);
   }
 

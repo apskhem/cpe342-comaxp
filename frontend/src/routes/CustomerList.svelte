@@ -1,9 +1,12 @@
 <script lang="ts">
+  import FullWaiter from "../components/FullWaiter.svelte";
+
   export let location: string;
 </script>
 
 <template>
   <main>
+    <FullWaiter />
     <div class="layout">
 
     </div>

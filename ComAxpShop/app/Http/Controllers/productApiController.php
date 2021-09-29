@@ -119,7 +119,11 @@ class productApiController extends Controller
         $targetProduct = Product::find($input['productCode']);
         $targetProduct->fill($input)->update();
 
-        return response('Data updated');
+        return response()->json(['message' => 'update product success']);
+    }
+
+    static function productSold($product){
+        
     }
 }
 

@@ -36,7 +36,7 @@ Route::put('product', [productApiController::class, 'updateProduct']);
 Route::get('customer', [customerApiController::class, 'getCustomer'])->name('customer');
 Route::post('customer', [customerApiController::class, 'addCustomer']);
 Route::delete('customer', [customerApiController::class, 'deleteCustomer']);
-Route::post('update-customer', [customerApiController::class, 'updateCustomer']);
+Route::put('customer', [customerApiController::class, 'updateCustomer']);
 
 Route::get('order', [orderApiController::class, 'getAllOrder'])->name('order');
 Route::post('order', [orderApiController::class, 'addOrder']);

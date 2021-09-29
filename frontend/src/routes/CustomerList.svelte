@@ -1,16 +1,11 @@
 <script lang="ts">
-  import VendorView from "../components/VendorView.svelte";
-
   export let location: string;
 </script>
 
 <template>
   <main>
     <div class="layout">
-      <VendorView />
-      <VendorView />
-      <VendorView />
-      <VendorView />
+
     </div>
   </main>
 </template>

@@ -1,23 +1,29 @@
 <script lang="ts">
-  import VendorView from "../components/VendorView.svelte";
-
   export let location: string;
 </script>
 
 <template>
   <main>
     <div class="layout">
-      <VendorView />
-      <VendorView />
-      <VendorView />
-      <VendorView />
+      <div class="not-found-text">Error: Page Not Found</div>
     </div>
   </main>
 </template>
 
 <style lang="scss">
+  main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .layout {
     max-width: 900px;
     margin: 0 auto;
+  }
+
+  .not-found-text {
+    font-weight: bold;
+    font-size: 48pt;
   }
 </style>

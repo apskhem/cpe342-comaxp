@@ -1,6 +1,4 @@
 <script lang="ts">
-  console.log("rendered");
-
   export let location: string;
 
   let isRequesting = false;
@@ -20,7 +18,10 @@
   <main>
     <div class="login-container">
       <form action="" class="form-container" on:submit|preventDefault={handleSubmit}>
-        <div>Home</div>
+        <div class="back-btn" on:click={() => window.history.back()}>
+          <i class="fas fa-chevron-left"></i>
+          <span>Back</span>
+        </div>
         <h1>Login</h1>
         <div class="input-label-grid">
           <div class="input-label">
@@ -47,7 +48,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: calc(100vh - 54px - 28px);
   }
 
   .login-container {
@@ -73,6 +73,14 @@
     justify-content: space-between;
     padding: 1em;
     color: #C1C1C1;
+  }
+
+  .back-btn {
+    cursor: pointer;
+
+    i {
+      margin-right: 8px;
+    }
   }
 
   h1 {

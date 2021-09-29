@@ -8,6 +8,7 @@
   footer {
     color: lightgray;
     text-align: center;
-    padding: 2px 4px;
+    padding: 8px 4px;
+    padding-top: 32px;
   }
 </style>

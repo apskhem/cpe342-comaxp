@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { Router, Link, navigate } from "svelte-routing";
+  import { navigate } from "svelte-routing";
+
+  const navigateOnce = (to: string) => {
+    return () => {
+      window.location.pathname != to && navigate(to);
+    }
+  };
 </script>
 
 <template>
@@ -9,10 +15,10 @@
 
       </aside>
       <aside class="logo-layout">
-        <div on:click={() => navigate("/")} class="logo-container" style="background-image: url(images/logo.png)"></div>
+        <div on:click={navigateOnce("/")} class="logo-container" style="background-image: url(images/logo.png)"></div>
       </aside>
       <aside class="right-container">
-        <div on:click={() => navigate("/login")}>LOGIN</div>
+        <div on:click={navigateOnce("/login")}>LOGIN</div>
       </aside>
     </section>
     <section class="lower-section">
@@ -26,15 +32,30 @@
           <aside>
             <div class="searchbar-container">
               <input type="text" placeholder="Search something here...">
-              <div class="search-icon"></div>
+              <div class="search-icon">
+                <i class="fas fa-search"></i>
+              </div>
             </div>
           </aside>
           <aside>
-            
+            <div class="cart-icon-container">
+              <i class="fas fa-shopping-basket"></i>
+            </div>
           </aside>
         </div>
-        <div>
-
+        <div class="controls-row">
+          <aside on:click={navigateOnce("/management")}>
+            Management
+          </aside>
+          <aside on:click={navigateOnce("/employees")}>
+            Employees
+          </aside>
+          <aside on:click={navigateOnce("/customers")}>
+            Customers
+          </aside>
+          <aside on:click={navigateOnce("/products")}>
+            Products
+          </aside>
         </div>
       </div>
     </section>
@@ -82,7 +103,7 @@
 
   .lower-section {
     background-color: #F3F3F3;
-    padding: 1em 0;
+    padding-top: 1em;
 
     .section-container {
       max-width: 800px;
@@ -90,7 +111,7 @@
 
       .searchbar-row {
         display: grid;
-        grid-template-columns: 100px 1fr 100px;
+        grid-template-columns: 144px 1fr 64px;
         gap: 1em;
 
         select {
@@ -100,15 +121,29 @@
           background-color: transparent;
           border: 0;
           margin: 0;
+          cursor: pointer;
 
           &:focus {
             outline: 0;
           }
         }
 
+        .cart-icon-container {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          i {
+            color: #A7A7A7;
+            font-size: x-large;
+          }
+        }
+
         .searchbar-container {
           display: grid;
-          grid-template-columns: 1fr 80px;
+          grid-template-columns: 1fr 54px;
           border: 2px solid #A7A7A7;
           border-radius: 8px;
           overflow: hidden;
@@ -119,8 +154,37 @@
           }
 
           .search-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #A7A7A7;
             background-color: #C4C4C4;
+            font-size: large;
+            
+            i {
+              cursor: pointer;
+            }
           }
+        }
+      }
+
+      .controls-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2px;
+        margin-top: 1em;
+        border-radius: 8px 8px 0 0;
+        overflow: hidden;
+
+        > aside {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 48px;
+          color: white;
+          background-color: #C4C4C4;
+          font-weight: bold;
+          cursor: pointer;
         }
       }
     }

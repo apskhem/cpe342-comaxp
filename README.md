@@ -16,3 +16,4 @@
 
 ### Source Links
 * [Front-End Design](https://www.figma.com/file/8FgUeychlmIqn0tGLKPz4A/Plastic-Model-Shop?node-id=0%3A1)
+* [OpenAPI Endpoints](https://app.swaggerhub.com/apis/coma3/comaxp-schema-shared/1.0.0)

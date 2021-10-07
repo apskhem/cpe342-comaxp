@@ -23,8 +23,3 @@ use App\Http\Controllers\paymentApiController;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('employee', [employeeApiController::class, 'getEmployee'])->name('employee');
-Route::post('employee', [employeeApiController::class, 'createEmployee']);
-Route::delete('employee', [employeeApiController::class, 'deleteEmployee']);
-Route::put('employee', [employeeApiController::class, 'updateEmployee']);

@@ -12,40 +12,54 @@ use App\Models\Customer;
 class customerApiController extends Controller
 {
     public function getCustomer(){
-        $customers = DB::table('customers')
-                        ->orderBy('customerNumber', 'asc')
-                        ->get();
-        return $customers;
+        $user = auth()->user();
+
+        if($user->tokenCan('Employee')){
+            $customers = DB::table('customers')
+                            ->orderBy('customerNumber', 'asc')
+                            ->get();
+            return $customers;
+        }
+        else{
+            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+        }
     }
     
     public function addCustomer(Request $request){
-        $validator = Validator::make(request()->all(), [
-            'customerName' => 'required',
-            'contactLastName' => 'required',
-            'contactFirstName' => 'required',
-            'phone' => 'required',
-            'addressLine1' => 'required',
-            'addressLine2' => 'nullable',
-            'city' => 'required',
-            'state' => 'nullable',
-            'postalCode' => 'nullable',
-            'country' => 'required',
-            'salesRepEmployeeNumber' => 'nullable',
-            'creditLimit' => 'nullable',
-            'memberPoint' => 'nullable',
-        ]);
+        $user = auth()->user();
 
-        if($validator->fails()){
-            return response()->json(['errors' => $validator->errors()], 401);
+        if($user->tokenCan('Employee')){
+            $validator = Validator::make(request()->all(), [
+                'customerName' => 'required',
+                'contactLastName' => 'required',
+                'contactFirstName' => 'required',
+                'phone' => 'required',
+                'addressLine1' => 'required',
+                'addressLine2' => 'nullable',
+                'city' => 'required',
+                'state' => 'nullable',
+                'postalCode' => 'nullable',
+                'country' => 'required',
+                'salesRepEmployeeNumber' => 'nullable',
+                'creditLimit' => 'nullable',
+                'memberPoint' => 'nullable',
+            ]);
+
+            if($validator->fails()){
+                return response()->json(['errors' => $validator->errors()], 401);
+            }
+
+            $customer = $request->all();
+
+            if($customer['memberPoint'] == null) $customer['memberPoint'] = 0;
+
+            $fetch = $this->addToDB($customer);
+        
+            return response()->json(['message' => 'add customer successfully']);
         }
-
-        $customer = $request->all();
-
-        if($customer['memberPoint'] == null) $customer['memberPoint'] = 0;
-
-        $fetch = $this->addToDB($customer);
-    
-        return response()->json(['message' => $customer]);
+        else{
+            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+        }
     }
 
     public function addToDB($customerData){
@@ -66,40 +80,56 @@ class customerApiController extends Controller
           ]);
     }
 
-    public function deleteCustomer(Request $request){
-        $validator = Validator::make(request()->all(), [
-            'customerNumber' => 'required|exists:customers,customerNumber',
-        ]);
+    public function deleteCustomer($customerNumber){
+        $user = auth()->user();
 
-        if($validator->fails()){
-            return response()->json(['errors' => $validator->errors()], 401);
+        if($user->tokenCan('Employee')){
+
+            $input = ['customerNumber' => $customerNumber];
+
+            $validator = Validator::make($input, [
+                'customerNumber' => 'required|exists:customers,customerNumber',
+            ]);
+
+            if($validator->fails()){
+                return response()->json(['errors' => $validator->errors()], 401);
+            }
+
+            $targetCustomer = Customer::where('customerNumber', $customerNumber)->first();
+            $targetCustomer->delete();
+
+            return response()->json(['message' => 'delete customer successfully']);
         }
-
-        $input = $request->only('customerNumber');
-        $targetCustomer = Customer::where('customerNumber', $input)->first();
-        $targetCustomer->delete();
-
-        return response('delete completed');
+        else{
+            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+        }
     }
 
-    public function updateCustomer(Request $request){
-        $validator = Validator::make(request()->all(), [
-            'customerNumber' => 'required|exists:customers,customerNumber',
-        ]);
+    public function updateCustomer($customerNumber, Request $request){
+        $user = auth()->user();
 
-        if($validator->fails()){
-            return response()->json(['errors' => $validator->errors()], 401);
+        if($user->tokenCan('Employee')){
+            $input = $request->all();
+            $input['customerNumber'] = $customerNumber;
+            
+            $validator = Validator::make($input, [
+                'customerNumber' => 'required|exists:customers,customerNumber',
+            ]);
+
+            if($validator->fails()){
+                return response()->json(['errors' => $validator->errors()], 401);
+            }
+
+            $targetCustomer = Customer::find($customerNumber);
+            $targetCustomer->fill($input)->update();
+
+            return response()->json(['message' => 'update customer successfully']);
         }
-
-        $input = $request->all();
-
-        $targetCustomer = Customer::find($input['customerNumber']);
-        $targetCustomer->fill($input)->update();
-
-        return response('Data updated');
+        else{
+            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+        }
     }
     
-    // ----- input is not finish yet ------
     static function increasePoint($input){
 
         $increasedPoint = (int) ($input['totalPaid']/100)*3;

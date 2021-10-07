@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\OrderDetail;
+
 class Order extends Model
 {
     use HasFactory;
@@ -24,5 +26,9 @@ class Order extends Model
         'customerNumber',
         'discountCode',
     ];
+
+    public function orderdetail(){
+        return $this->hasMany(OrderDetail::class, 'orderNumber');
+    }
 }
 

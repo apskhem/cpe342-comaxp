@@ -13,6 +13,7 @@ use App\Models\Payment;
 use App\Models\Order;
 use App\Http\Controllers\customerApiController;
 use App\Http\Controllers\productApiController;
+use App\Http\Controllers\discountcodeApiController;
 
 class paymentApiController extends Controller
 {
@@ -72,6 +73,11 @@ class paymentApiController extends Controller
                 //change order status
                 $order->status = "on hold";
                 $order->update();
+
+                // decrease discount code amount
+                if($order['discountCode'] != null){
+                    discountcodeApiController::decreaseDiscountCode($order['discountCode']);
+                }
                 
                 // increase member point
                 $customerData = [

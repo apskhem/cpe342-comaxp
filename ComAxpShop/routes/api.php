@@ -9,6 +9,7 @@ use App\Http\Controllers\productApiController;
 use App\Http\Controllers\customerApiController;
 use App\Http\Controllers\orderApiController;
 use App\Http\Controllers\paymentApiController;
+use App\Http\Controllers\discountcodeApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,40 +24,24 @@ use App\Http\Controllers\paymentApiController;
 
 Route::get('login', [authApiController::class, 'checkLogin'])->name('login');
 
-// Route::get('/employees', [employeeApiController::class, 'getEmployee'])->name('employee');
-// Route::post('/employees', [employeeApiController::class, 'createEmployee']);
-// Route::delete('/employees/{employeeNumber}', [employeeApiController::class, 'deleteEmployee']);
-// Route::put('/employees/{employeeNumber}', [employeeApiController::class, 'updateEmployee']);
-
-// Route::get('products', [productApiController::class, 'getProduct'])->name('product');
-// Route::post('product', [productApiController::class, 'addProduct']);
-// Route::delete('product', [productApiController::class, 'deleteProduct']);
-// Route::put('product', [productApiController::class, 'updateProduct']);
 Route::get('catalogs', [employeeApiController::class, 'getCatalog']);
 
-// Route::get('customer', [customerApiController::class, 'getCustomer'])->name('customer');
-// Route::post('customer', [customerApiController::class, 'addCustomer']);
-// Route::delete('customer', [customerApiController::class, 'deleteCustomer']);
-// Route::put('customer', [customerApiController::class, 'updateCustomer']);
+Route::get('discountcodes', [discountcodeApiController::class, 'getDiscountCode'])->name('discountcode');
+Route::post('discountcodes', [discountcodeApiController::class, 'addDiscountCode']);
+Route::delete('discountcodes/{discountCode}', [discountcodeApiController::class, 'deleteDiscountCode']);
+Route::put('discountcodes/{discountCode}', [discountcodeApiController::class, 'updateDiscountCode']);
+Route::get('is-discountcode-exist/{discountCode}', [discountcodeApiController::class, 'isDiscountCodeAvailable']);
+// Route::get('decreased/{discountCode}', [discountcodeApiController::class, 'decreaseDiscountCode']);
 
-// Route::get('/orders', [orderApiController::class, 'getAllOrder'])->name('order');
-// Route::post('/orders', [orderApiController::class, 'addOrder']);
-// Route::delete('/orders/{orderNumber}', [orderApiController::class, 'deleteOrder']);
-// Route::put('/orders/{orderNumber}', [orderApiController::class, 'updateOrder']);
-
-// Route::get('payment', [paymentApiController::class, 'getAllTransaction'])->name('payment');
-// Route::post('payment', [paymentApiController::class, 'addTransaction']);
-// Route::delete('payment', [paymentApiController::class, 'deleteTransaction']);
-// Route::post('update-payment', [paymentApiController::class, 'updateTransaction']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
     // employee
-    Route::get('/employees', [employeeApiController::class, 'getEmployee'])->name('employee');
-    Route::post('/employees', [employeeApiController::class, 'createEmployee']);
-    Route::delete('/employees/{employeeNumber}', [employeeApiController::class, 'deleteEmployee']);
-    Route::put('/employees/{employeeNumber}', [employeeApiController::class, 'updateEmployee']);
-    Route::put('/employee-management/{employeeNumber}', [employeeApiController::class, 'promoteDemoteEmployee']);
+    Route::get('employees', [employeeApiController::class, 'getEmployee'])->name('employee');
+    Route::post('employees', [employeeApiController::class, 'createEmployee']);
+    Route::delete('employees/{employeeNumber}', [employeeApiController::class, 'deleteEmployee']);
+    Route::put('employees/{employeeNumber}', [employeeApiController::class, 'updateEmployee']);
+    Route::put('employee-management/{employeeNumber}', [employeeApiController::class, 'promoteDemoteEmployee']);
 
     //product
     Route::get('products', [productApiController::class, 'getProduct'])->name('product');
@@ -71,10 +56,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('customers/{customerNumber}', [customerApiController::class, 'updateCustomer']);
 
     //order
-    Route::get('/orders', [orderApiController::class, 'getAllOrder'])->name('order');
-    Route::post('/orders', [orderApiController::class, 'addOrder']);
-    Route::delete('/orders/{orderNumber}', [orderApiController::class, 'deleteOrder']);
-    Route::put('/orders/{orderNumber}', [orderApiController::class, 'updateOrder']);
+    Route::get('orders', [orderApiController::class, 'getAllOrder'])->name('order');
+    Route::post('orders', [orderApiController::class, 'addOrder']);
+    Route::delete('orders/{orderNumber}', [orderApiController::class, 'deleteOrder']);
+    Route::put('orders/{orderNumber}', [orderApiController::class, 'updateOrder']);
 
     //payment
     Route::get('payments', [paymentApiController::class, 'getAllTransaction'])->name('payment');

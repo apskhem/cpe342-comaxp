@@ -48,7 +48,7 @@ class orderApiController extends Controller
                 'status' => 'in:'.implode(',', $validStatus),
                 'comments' => 'nullable',
                 'customerNumber' => 'required|exists:customers,customerNumber',
-                'discountCode' => 'nullable|exists:discountcodes,discountCode',
+                'discountCode' => 'nullable|exists:discountcodes,discountCode|size:8',
             ]);
 
             if($generalValidator->fails()){
@@ -187,7 +187,7 @@ class orderApiController extends Controller
 
             $productValidator = Validator::make($product, [
                 'productCode' => 'required|exists:products,productCode',
-                'quantityOrdered' => 'required|integer',
+                'quantityOrdered' => 'required|integer|min:0',
                 'priceEach' => 'required|numeric',
                 'orderLineNumber' => 'required|integer',
             ]);

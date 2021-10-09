@@ -5,22 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Payment extends Model
+class OrderDetail extends Model
 {
     use HasFactory;
 
-    protected $table = "payments";
-    // protected $primaryKey = ['customerNumber', 'checkNumber'];
+    protected $table = "orderdetails";
     protected $primaryKey = 'orderNumber';
 
     const UPDATED_AT = null;
     const CREATED_AT = null;
 
     protected $fillable = [
-        'customerNumber',
-        'checkNumber',
-        'paymentDate',
-        'amount',
         'orderNumber',
+        'productCode',
+        'quantityOrdered',
+        'priceEach',
+        'orderLineNumber',
     ];
 }
+

@@ -1,0 +1,262 @@
+====== Authentication ======
+
+/login
+
+method : GET
+body :
+    employeeNumber : required
+    password : required
+return : 
+    token (with role)
+
+====== Employee ======
+
+/employee
+
+method : GET
+body : 
+return :
+    array object
+    
+-----------------------
+/employee
+
+method : POST
+body : 
+    lastName : required
+    firstName : required
+    extension : required
+    email : required | email format | unique value
+    offictCode : required | exist in officeCode
+    reportsTo : required | exist in employeeNumber
+    jobTitle : required
+    password : required | min: 6
+return :
+    json message : success
+    
+-----------------------
+/employee
+
+method : DELETE
+body : 
+    employeeNumber : required | exist in employeeNumber
+return :
+    json message : success
+    
+-----------------------
+/update-employee
+
+method : POST
+body : 
+    lastName : nullable
+    firstName : nullable
+    extension : nullable
+    email : nullable | email format | unique value
+    offictCode : nullable | exist in officeCode
+    reportsTo : nullable | exist in employeeNumber
+    jobTitle : nullable
+    password : nullable | min: 6
+return :
+    json message : success
+    
+====== Customer ======
+
+/customer
+
+method : GET
+body : 
+return :
+    array object
+    
+-----------------------
+/customer
+
+method : POST
+body : 
+    customerName : required
+    contactLastName : required
+    contactFirstName : required
+    phone : required
+    addressLine1 : required
+    addressLine2 : nullable
+    city : required
+    state : nullable
+    postalCode : nullable
+    country : required
+    salesRepEmployeeNumber : nullable
+    creditLimit : nullable
+    memberPoint : nullable
+return :
+    json message : success
+    
+-----------------------
+/customer
+
+method : DELETE
+body : 
+    customerNumber : required | exist in customerNumber
+return :
+    json message : success
+
+-----------------------
+/update-customer
+
+method : POST
+body : 
+    customerNumber : required | exist in customerNumber
+    customerName : nullable
+    contactLastName : nullable
+    contactFirstName : nullable
+    phone : nullable
+    addressLine1 : nullable
+    addressLine2 : nullable
+    city : nullable
+    state : nullable
+    postalCode : nullable
+    country : nullable
+    salesRepEmployeeNumber : nullable
+    creditLimit : nullable
+    memberPoint : nullable
+return :
+    json message : success
+    
+====== Product ======
+
+/product   ยังไม่เสด เดวมาคุยกันก่อน
+
+method : GET
+body : 
+return :
+    array object
+    
+-----------------------
+/product
+
+method : POST
+body : 
+    productCode : required
+    productName : required
+    productLine : required | exist in productLine
+    productScale : required
+    productVendor : required
+    productDescription : required
+    quantityInStock : required
+    buyPrice : required
+    MSRP : required
+return :
+    json message : success
+    
+-----------------------
+/product
+
+method : DELETE
+body : 
+    productCode : required | exist in productCode
+return :
+    json message : success
+
+-----------------------
+/update-product
+
+method : POST
+body : 
+    productCode : required
+    productName : nullable
+    productLine : nullable | exist in productLine
+    productScale : nullable
+    productVendor : nullable
+    productDescription : nullable
+    quantityInStock : nullable
+    buyPrice : nullable
+    MSRP : nullable
+return :
+    json message : success
+    
+====== Order ======
+
+/order
+
+method : GET
+body : 
+return :
+    array object
+    
+-----------------------
+/order
+
+method : POST
+body : 
+    requiredDate : required | date Year-month-date | after or equal today
+    shippedDate : nullable | date Year-month-date | after or equal today | before requiredDate
+    status : value = in process
+    comments : nullable
+    customerNumber : required | exist in customerNumber
+    discountCode : nullable | exist in discountCode
+return :
+    json message : success
+    
+-----------------------
+/order
+
+method : DELETE
+body : 
+    orderNumber : required | exist in orderNumber
+return :
+    json message : success
+
+-----------------------
+/update-order
+
+method : POST
+body : 
+    orderDate : nullable
+    requiredDate : nullable | date Year-month-date | after or equal today
+    shippedDate : nullable | date Year-month-date | after or equal today | before requiredDate
+    status : value = ['canceled', 'disputed', 'in process', 'on hold', 'resloved', 'shipped']
+    comments : nullable
+    customerNumber : nullable | exist in customerNumber
+    discountCode : nullable | exist in discountCode
+return :
+    json message : success
+    
+====== Payment ======
+
+/payment
+
+method : GET
+body : 
+return :
+    array object
+    
+-----------------------
+/payment
+
+method : POST
+body : 
+    checkNumber : required
+    amount : required | numeric
+    orderNumber : required | exist in orderNumber
+return :
+    json message : gainedPoint
+    
+-----------------------
+/payment
+
+method : DELETE
+body : 
+    orderNumber : required | exist in orderNumber
+return :
+    json message : success
+
+-----------------------
+/update-payment
+
+method : POST
+body : 
+    paymentDate : nullable
+    checkNumber : nullable
+    amount : nullable | numeric
+    orderNumber : required | exist in orderNumber
+return :
+    json message : success
+    

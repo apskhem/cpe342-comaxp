@@ -2,6 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\authApiController;
+use App\Http\Controllers\employeeApiController;
+use App\Http\Controllers\productApiController;
+use App\Http\Controllers\customerApiController;
+use App\Http\Controllers\orderApiController;
+use App\Http\Controllers\paymentApiController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes

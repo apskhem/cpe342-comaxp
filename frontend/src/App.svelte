@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Router, Link, Route } from "svelte-routing";
+  import { loginToken } from "./stores";
   import Header from "./components/Header.svelte";
   import Footer from "./components/Footer.svelte";
   import Home from "./routes/Home.svelte";
@@ -8,9 +9,12 @@
   import CustomerList from "./routes/CustomerList.svelte";
   import ProductList from "./routes/ProductList.svelte";
   import NotFound from "./routes/NotFound.svelte";
-  import { loginToken } from "./stores";
-
-  export let name: string;
+  import Checkout from "./routes/Checkout.svelte";
+  import PlaceOrder from "./routes/PlaceOrder.svelte";
+  import CatalogView from "./routes/CatalogView.svelte";
+  import EmployeeView from "./routes/EmployeeView.svelte";
+  import CustomerView from "./routes/CustomerView.svelte";
+  import ProductView from "./routes/ProductView.svelte";
 
   const start = () => {
     const loginItem = localStorage.getItem("token") ?? "";
@@ -25,17 +29,23 @@
   <Router>
     <Route path="/" component="{Home}" />
     <Route path="/catalog" component="{Home}" />
+    <Route path="/catalog/:id" component="{CatalogView}" />
+    <Route path="/checkout" component="{Checkout}" />
+    <Route path="/placeorder" component="{PlaceOrder}" />
     <Route path="/login" component="{Login}" />
     <Route path="/employees" component="{EmployeeList}" />
+    <Route path="/employees/:id" component="{EmployeeView}" />
     <Route path="/customers" component="{CustomerList}" />
+    <Route path="/customers/:id" component="{CustomerView}" />
     <Route path="/products" component="{ProductList}" />
+    <Route path="/products/:id" component="{ProductView}" />
     <Route path="*" component="{NotFound}" />
   </Router>
   <Footer />
 </template>
 
 <style lang="scss" global>
-  @import url(https://fonts.googleapis.com/css2?family=Roboto&display=swap);
+  @import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
   
   main {
     position: relative;

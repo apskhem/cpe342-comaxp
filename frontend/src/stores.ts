@@ -1,4 +1,4 @@
 import { writable } from "svelte/store";
 
-export const cachedProducts = writable([]);
+export const cartProduct = writable(new Map());
 export const loginToken = writable("");

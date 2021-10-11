@@ -17,11 +17,9 @@
         "Authorization": `Bearer ${token}`
       })
     });
-    const data: Response.GetCustomerList = await res.json();
+    list = await res.json();
 
-    list = data;
-
-    console.log(data);
+    console.log(list);
   };
 
   start();

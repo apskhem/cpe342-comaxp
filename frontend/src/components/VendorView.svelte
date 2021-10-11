@@ -2,6 +2,8 @@
   import { navigate } from "svelte-routing";
   import ProductCard from "../components/ProductCard.svelte";
 
+  export let expand = false;
+  export let limit = Infinity;
   export let vendor: string;
   export let products: Model.IProduct[];
 </script>
@@ -10,10 +12,12 @@
   <div class="vendor-view">
     <div class="vendor-view-header">
       <div># {vendor} ({products.length})</div>
-      <div on:click={() => navigate(`catalog/${vendor}`)} class="see-more">see more</div>
+      {#if expand}
+        <div on:click={() => navigate(`catalog/${vendor}`)} class="see-more">see more</div>
+      {/if}
     </div>
     <div class="item-layout">
-      {#each products.slice(0, 4) as p}
+      {#each products.slice(0, limit) as p}
         <ProductCard data={p} />
       {/each}
     </div>

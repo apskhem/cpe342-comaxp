@@ -17,11 +17,9 @@
         "Authorization": `Bearer ${token}`
       })
     });
-    const data: Response.GetProductList = await res.json();
+    list = await res.json();
 
-    list = data;
-
-    console.log(data);
+    console.log(list);
   };
 
   start();
@@ -44,7 +42,7 @@
           </thead>
           <tbody>
             {#each list as el, i}
-              <tr on:click={() => navigate(`/customers/${el.prodcutCode}`)}>
+              <tr on:click={() => navigate(`/customers/${el.productCode}`)}>
                 <td>{i + 1}</td>
                 <td>{el.productName}</td>
                 <td>{el.productDescription}</td>

@@ -1,14 +1,14 @@
 <script lang="ts">
   import FullWaiter from "../components/FullWaiter.svelte";
-import VendorView from "../components/VendorView.svelte";
+  import VendorView from "../components/VendorView.svelte";
 
   export let location: string;
 
-  let isRequesing = false;
+  let isRequesting = false;
   const catalogMap = new Map<string, Model.IProduct[]>();
 
   const start = async () => {
-    isRequesing = true;
+    isRequesting = true;
     const res = await fetch("https://comaxp.herokuapp.com/api/catalogs");
     const data: Response.GetProductList = await res.json();
 
@@ -19,7 +19,7 @@ import VendorView from "../components/VendorView.svelte";
     }
 
     console.log(catalogMap);
-    isRequesing = false;
+    isRequesting = false;
   };
 
   const addCatalog = (item: Model.IProduct) => {
@@ -44,12 +44,17 @@ import VendorView from "../components/VendorView.svelte";
 
 <template>
   <main>
-    {#if isRequesing}
+    {#if isRequesting}
       <FullWaiter />
     {:else}
       <div class="layout">
         {#each Array.from(catalogMap) as [ vendor, products ]}
-          <VendorView vendor={vendor} products={products} />
+          <VendorView
+            vendor={vendor}
+            products={products}
+            limit={4}
+            expand={true}
+          />
         {/each}
       </div>
     {/if}

@@ -19,13 +19,11 @@
         "Authorization": `Bearer ${token}`
       })
     });
-    const data: Response.GetEmployeeList = await res.json();
+    list = await res.json();
 
-    list = data;
+    console.log(list);
 
-    console.log(data);
-
-    for (const employee of data) {
+    for (const employee of list ?? []) {
       employeeMap.set(employee.employeeNumber, employee.firstName + " " + employee.lastName);
     }
   };
@@ -96,7 +94,7 @@
           </thead>
           <tbody>
             {#each list as el, i}
-              <tr on:click={() => navigate(`/employee/${el.employeeNumber}`)}>
+              <tr on:click={() => navigate(`/employees/${el.employeeNumber}`)}>
                 <td>{i + 1}</td>
                 <td>{employeeMap.get(el.employeeNumber)}</td>
                 <td>{el.extension}</td>

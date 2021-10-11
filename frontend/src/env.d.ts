@@ -45,7 +45,7 @@ module Model {
   interface IProduct {
     MSRP: string;
     buyPrice: string;
-    prodcutCode: string;
+    productCode: string;
     productDescription: string;
     productLine: string;
     productName: string;

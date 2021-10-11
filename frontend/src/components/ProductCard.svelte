@@ -1,12 +1,37 @@
 <script lang="ts">
+  import { cartProduct } from "../stores";
+
   export let data: Model.IProduct;
+
+  let cart: Map<string, [ number, Model.IProduct ]>;
+
+  cartProduct.subscribe((value) => cart = value);
+
+  const addToCart = () => {
+    // if product type is exist
+    if (cart.has(data.productCode)) {
+      const arr = cart.get(data.productCode);
+
+      if (!arr) {
+        throw new Error("Assertion failed");
+      }
+
+      arr[0] += 1;
+    }
+    // otherwise
+    else {
+      cart.set(data.productCode, [ 1, data ]);
+    }
+
+    cartProduct.set(cart);
+  }
 </script>
 
 <template>
   <div class="product-card">
     <div class="image-container">
       <div class="scale">{data.productScale}</div>
-      <div class="add-to-cart-icon">
+      <div class="add-to-cart-icon" on:click={addToCart}>
         <i class="fas fa-cart-plus"></i>
       </div>
       <div class="image-background"></div>
@@ -49,7 +74,7 @@
 
       > .add-to-cart-icon {
         position: absolute;
-        right: 0;
+        right: 0.5em;
         z-index: 1;
         color: #717171;
         font-size: large;

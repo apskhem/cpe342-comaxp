@@ -1,11 +1,25 @@
 <script lang="ts">
   import { navigate } from "svelte-routing";
   import cx from "classnames";
-  import { loginToken } from "../stores";
+  import { cartProduct, loginToken } from "../stores";
 
   let token = "";
+  let cartCount = 0;
+  let shake = true;
   
   loginToken.subscribe((value) => token = value);
+
+  cartProduct.subscribe((value) => {
+    cartCount = 0;
+    for (const [, [ i ]] of Array.from(value)) {
+      cartCount += i;
+    }
+
+    shake = true;
+    setTimeout(() => {
+      shake = false;
+    }, 200);
+  });
 
   const navigateOnce = (to: string) => {
     return () => {
@@ -26,7 +40,7 @@
 
       </aside>
       <aside class="logo-layout">
-        <div on:click={navigateOnce("/")} class="logo-container" style="background-image: url(images/logo.png)"></div>
+        <div on:click={navigateOnce("/")} class="logo-container" style="background-image: url(/images/logo.png)"></div>
       </aside>
       <aside class="right-container">
         {#if token}
@@ -57,13 +71,17 @@
           </aside>
           <aside>
             <div class="cart-icon-container">
-              <i class="fas fa-shopping-basket"></i>
+              <i on:click={navigateOnce("/checkout")} class={cx("fas fa-shopping-basket", { "shake-horizontal shake-constant": shake })}></i>
+              <div on:click|stopPropagation={navigateOnce("/checkout")} class="cart-count">{cartCount}</div>
             </div>
           </aside>
         </div>
         <div class={cx("controls-row", { "show": token })}>
-          <aside on:click={navigateOnce("/management")}>
-            Management
+          <aside on:click={navigateOnce("/orders")}>
+            Orders
+          </aside>
+          <aside on:click={navigateOnce("/payments")}>
+            Payments
           </aside>
           <aside on:click={navigateOnce("/employees")}>
             Employees
@@ -147,6 +165,7 @@
         }
 
         .cart-icon-container {
+          position: relative;
           width: 100%;
           height: 100%;
           display: flex;
@@ -156,6 +175,24 @@
           i {
             color: #A7A7A7;
             font-size: x-large;
+          }
+
+          > .cart-count {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            color: white;
+            font-size: x-small;
+            border: 2px solid #F3F3F3;
+            background-color: #AB1A1A;
+            transform: translate(-30%, -30%);
+            cursor: pointer;
           }
         }
 
@@ -188,7 +225,7 @@
 
       .controls-row {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
         gap: 2px;
         margin-top: 1em;
         border-radius: 8px 8px 0 0;

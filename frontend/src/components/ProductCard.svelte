@@ -1,25 +1,28 @@
 <script lang="ts">
-  
+  export let data: Model.IProduct;
 </script>
 
 <template>
   <div class="product-card">
     <div class="image-container">
-      <div class="scale">scale</div>
+      <div class="scale">{data.productScale}</div>
+      <div class="add-to-cart-icon">
+        <i class="fas fa-cart-plus"></i>
+      </div>
       <div class="image-background"></div>
     </div>
     <div class="desc-container">
       <div class="upper-desc">
-        <div class="product-name">Product 1</div>
-        <div class="vendor-name">Company</div>
+        <div class="product-name">{data.productName}</div>
+        <div class="vendor-name">{data.productLine}</div>
       </div>
       <div class="lower-desc">
         <div class="product-price">
-          <span class="current-price">$XXX</span>
-          <span class="killed-price">$XXX</span>
+          <span class="current-price">${data.buyPrice}</span>
+          <span class="killed-price">${data.MSRP}</span>
         </div>
         <div class="product-remaining-count">
-          <span>102</span>
+          <span>{data.quantityInStock.toLocaleString("en")}</span>
           <i class="fas fa-boxes"></i>
         </div>
       </div>
@@ -41,7 +44,16 @@
       > .scale {
         position: absolute;
         z-index: 1;
-        color: #C0BABA;
+        color: #717171;
+      }
+
+      > .add-to-cart-icon {
+        position: absolute;
+        right: 0;
+        z-index: 1;
+        color: #717171;
+        font-size: large;
+        cursor: pointer;
       }
 
       .image-background {
@@ -50,7 +62,12 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: lightcyan;
+        background-color: lightgray;
+
+        background-image: url("../images/image-not-available.png");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
       }
     }
 

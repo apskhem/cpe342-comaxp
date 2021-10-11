@@ -1,18 +1,21 @@
 <script lang="ts">
+  import { navigate } from "svelte-routing";
   import ProductCard from "../components/ProductCard.svelte";
+
+  export let vendor: string;
+  export let products: Model.IProduct[];
 </script>
 
 <template>
   <div class="vendor-view">
     <div class="vendor-view-header">
-      <div># Autoart Studio Design</div>
-      <div class="see-more">see more</div>
+      <div># {vendor} ({products.length})</div>
+      <div on:click={() => navigate(`catalog/${vendor}`)} class="see-more">see more</div>
     </div>
     <div class="item-layout">
-      <ProductCard />
-      <ProductCard />
-      <ProductCard />
-      <ProductCard />
+      {#each products.slice(0, 4) as p}
+        <ProductCard data={p} />
+      {/each}
     </div>
   </div>
 </template>

@@ -1,11 +1,22 @@
 <script lang="ts">
   import { navigate } from "svelte-routing";
+  import cx from "classnames";
+  import { loginToken } from "../stores";
+
+  let token = "";
+  
+  loginToken.subscribe((value) => token = value);
 
   const navigateOnce = (to: string) => {
     return () => {
       window.location.pathname != to && navigate(to);
     }
   };
+
+  const logout = () => {
+    loginToken.set("");
+    localStorage.clear();
+  }
 </script>
 
 <template>
@@ -18,7 +29,14 @@
         <div on:click={navigateOnce("/")} class="logo-container" style="background-image: url(images/logo.png)"></div>
       </aside>
       <aside class="right-container">
-        <div on:click={navigateOnce("/login")}>LOGIN</div>
+        {#if token}
+          <div on:click={() => {
+            logout();
+            navigate("/", { replace: true });
+          }}>SIGN OUT</div>
+        {:else}
+          <div on:click={navigateOnce("/login")}>LOGIN</div>
+        {/if}
       </aside>
     </section>
     <section class="lower-section">
@@ -26,7 +44,7 @@
         <div class="searchbar-row">
           <aside>
             <select name="" id="">
-              <option value="" selected disabled>Catalog</option>
+              <option value="" selected disabled>Vendor</option>
             </select>
           </aside>
           <aside>
@@ -43,7 +61,7 @@
             </div>
           </aside>
         </div>
-        <div class="controls-row">
+        <div class={cx("controls-row", { "show": token })}>
           <aside on:click={navigateOnce("/management")}>
             Management
           </aside>
@@ -175,6 +193,11 @@
         margin-top: 1em;
         border-radius: 8px 8px 0 0;
         overflow: hidden;
+        opacity: 0;
+
+        &.show {
+          opacity: 1;
+        }
 
         > aside {
           display: flex;
@@ -188,5 +211,9 @@
         }
       }
     }
+  }
+
+  .fa-shopping-basket {
+    cursor: pointer;
   }
 </style>

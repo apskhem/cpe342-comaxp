@@ -8,8 +8,16 @@
   import CustomerList from "./routes/CustomerList.svelte";
   import ProductList from "./routes/ProductList.svelte";
   import NotFound from "./routes/NotFound.svelte";
+  import { loginToken } from "./stores";
 
   export let name: string;
+
+  const start = () => {
+    const loginItem = localStorage.getItem("token") ?? "";
+    loginToken.set(loginItem);
+  };
+
+  start();
 </script>
 
 <template>

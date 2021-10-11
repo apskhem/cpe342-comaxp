@@ -1,7 +1,12 @@
 <script lang="ts">
+  import { navigate } from "svelte-routing";
+  import cx from "classnames";
+  import { loginToken } from "../stores";
+
   export let location: string;
 
   let isRequesting = false;
+  let isError = false;
 
   const encodeForm = (formData: FormData) => {
     const entries: [string, string][] = [];
@@ -20,6 +25,7 @@
       return;
     }
 
+    isError = false;
     isRequesting = true;
 
     try {
@@ -29,10 +35,18 @@
       const res = await fetch(`https://comaxp.herokuapp.com/api/login?${encoded}`);
       const data: Response.Login = await res.json();
 
-      console.log(data);
+      if (data.Token) {
+        localStorage.setItem("token", data.Token);
+        loginToken.set(data.Token)
+        navigate("/");
+      }
+      else {
+        throw new Error(data.toString());
+      }
     }
     catch (err) {
-
+      isError = true;
+      console.error(err);
     }
     finally {
       isRequesting = false;
@@ -59,7 +73,10 @@
             <input id="login-password" name="password" type="password" disabled={isRequesting} required />
           </div>
         </div>
-        <button type="submit" disabled={isRequesting}>Log In</button>
+        <div class="submit-btn-container">
+          <button type="submit" disabled={isRequesting}>{ isRequesting ? "Logging In..." : "Log In" }</button>
+          <div class={cx("err-msg", { "show": isError })}>Incorrect username or password.</div>
+        </div>
       </form>
       <aside class="wallpaper-container">
         <img src="images/logo.png" alt="logo" width="240px">
@@ -138,6 +155,17 @@
       height: 38px;
       border-radius: 4px;
       transition: 300ms;
+    }
+  }
+
+  .err-msg {
+    font-size: small;
+    color: red;
+    text-align: center;
+    opacity: 0;
+
+    &.show {
+      opacity: 1;
     }
   }
 </style>

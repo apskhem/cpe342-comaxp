@@ -4,10 +4,13 @@ declare module "*.svelte" {
 
 module Response {
   interface Login {
-    Token: string;
+    Token?: string;
+    message?: string;
   }
 
-  type GetEmployeeList = IEmployee[];
+  type GetEmployeeList = Model.IEmployee[];
+  type GetCustomerList = Model.ICustomer[];
+  type GetProductList = Model.IProduct[];
 }
 
 module Model {
@@ -20,5 +23,34 @@ module Model {
     jobTitle: string;
     officeCode: string;
     reportsTo: null | number;
+  }
+
+  interface ICustomer {
+    addressLine1: string;
+    addressLine2: string | null;
+    city: string;
+    contactFirstName: string;
+    contactLastName: string;
+    country: string;
+    creditLimit: string;
+    customerName: string;
+    customerNumber: number;
+    memberPoint: number;
+    phone: string;
+    postalCode: string;
+    salesRepEmployeeNumber: number;
+    state: string | null;
+  }
+
+  interface IProduct {
+    MSRP: string;
+    buyPrice: string;
+    prodcutCode: string;
+    productDescription: string;
+    productLine: string;
+    productName: string;
+    productScale: string;
+    productVendor: string;
+    quantityInStock: number;
   }
 }

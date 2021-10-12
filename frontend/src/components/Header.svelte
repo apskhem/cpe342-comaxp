@@ -11,7 +11,7 @@
 
   cartProduct.subscribe((value) => {
     cartCount = 0;
-    for (const [, [ i ]] of Array.from(value)) {
+    for (const [, [ i ]] of value) {
       cartCount += i;
     }
 
@@ -30,7 +30,7 @@
   const logout = () => {
     loginToken.set("");
     localStorage.clear();
-  }
+  };
 </script>
 
 <template>

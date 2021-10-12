@@ -53,4 +53,29 @@ module Model {
     productVendor: string;
     quantityInStock: number;
   }
+
+  interface IOrder {
+    comments: string | null;
+    customerNumber: number;
+    discountCode: string | null;
+    orderDate: string;
+    orderLineNumber: number;
+    orderNumber: number;
+    priceEach: string;
+    productCode: string;
+    quantityOrdered: number;
+    requiredDate: string;
+    shippedDate: string;
+    status: string;
+  }
+
+  interface IPayment {
+    orderNumber: number;
+    customerNumber: number;
+    checkNumber: string;
+    paymentDate: string;
+    amount: number;
+  }
 }
+
+type Cart = Map<string, [ number, Model.IProduct ]>

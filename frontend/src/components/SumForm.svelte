@@ -1,4 +1,5 @@
 <script lang="ts">
+  export let enableInputs = false;
   export let isPending = false;
   export let label: string;
   export let sum: number;
@@ -24,19 +25,21 @@
         <aside>Total:</aside>
         <aside>${sum.toLocaleString("en")}</aside>
       </div>
-      <input
-        type="text"
-        placeholder="Discount code"
-        bind:value={coupon}
-        disabled={isPending}
-      >
-      <input
-        type="text"
-        placeholder="Customer name or code"
-        bind:value={customer}
-        disabled={isPending}
-        required
-      >
+      {#if enableInputs}
+        <input
+          type="text"
+          placeholder="Discount code"
+          bind:value={coupon}
+          disabled={isPending}
+        >
+        <input
+          type="text"
+          placeholder="Customer name or code"
+          bind:value={customer}
+          disabled={isPending}
+          required
+        >
+      {/if}
       <button type="submit" class="checkout-btn">
         {#if isPending}
           <div class="square-loading-container">

@@ -6,20 +6,21 @@
   export let location: string;
 
   let token = "";
-  let list: null | Model.IProduct[] = null;
+  let list: null | Model.IPayment[] = null;
 
   loginToken.subscribe((value) => token = value);
 
   const start = async () => {
-    const res = await fetch("https://comaxp.herokuapp.com/api/products", {
+    const res = await fetch("https://comaxp.herokuapp.com/api/payments", {
       method: "get",
       headers: new Headers({
         "Authorization": `Bearer ${token}`
       })
     });
+    
     list = await res.json();
 
-    console.log(list);
+    console.log(list)
   };
 
   start();
@@ -34,22 +35,14 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Full Name</th>
-                <th>Phone</th>
-                <th>City</th>
-                <th>State</th>
-                <th>Country</th>
+                <th>Order No.</th>
               </tr>
             </thead>
             <tbody>
-              {#each list as el, i}
-                <tr on:click={() => navigate(`/customers/${el.productCode}`)}>
+              {#each list.slice(0, 200) as el, i}
+                <tr on:click={() => navigate(`/orders/${el.orderNumber}`)}>
                   <td>{i + 1}</td>
-                  <td>{el.productName}</td>
-                  <td>{el.productDescription}</td>
-                  <td>{el.productLine}</td>
-                  <td>{el.productVendor}</td>
-                  <td>{el.buyPrice}
+                  <td>{"test"}
                     <div on:click|stopPropagation class="row-option">
                       <i class="fas fa-clipboard"></i>
                     </div>

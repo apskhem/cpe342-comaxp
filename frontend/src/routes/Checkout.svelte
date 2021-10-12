@@ -2,11 +2,9 @@
   import { navigate } from "svelte-routing";
   import ProductCard from "../components/ProductCard.svelte";
   import SumForm from "../components/SumForm.svelte";
-  import { checkOutData, cartProduct, loginToken } from "../stores";
+  import { checkoutData, cartProduct, loginToken } from "../stores";
 
   export let location: string;
-
-  type Cart = Map<string, [ number, Model.IProduct ]>
 
   let cartRef: Cart;
   let filtered: Map<string, Cart>;
@@ -14,8 +12,6 @@
   let isPending = false;
   let token = "";
   let errorMsg = "";
-
-  loginToken.subscribe((value) => token = value);
 
   $: {
     let sum = 0;
@@ -27,6 +23,8 @@
 
     subtotal = sum;
   }
+
+  loginToken.subscribe((value) => token = value);
 
   cartProduct.subscribe((cart: Cart) => {
     cartRef = cart;
@@ -103,6 +101,36 @@
       cartProduct.set(cartRef);
     };
   };
+
+  const checkout = async (coupon: string, customer: string) => {
+    isPending = true;
+    errorMsg = "";
+    
+    try {
+      const res = await fetch(`https://comaxp.herokuapp.com/api/customers/${customer}`, {
+        method: "get",
+        headers: new Headers({
+          "Authorization": `Bearer ${token}`
+        })
+      });
+      const data = (await res.json());
+
+      // error guard
+      if (!data || !data.length) {
+        throw new Error("Incorrect customer code");
+      }
+
+      checkoutData.set({ coupon, customer });
+      
+      navigate("/placeorder");
+    }
+    catch (err) {
+      errorMsg = `${err}`;
+    }
+    finally {
+      isPending = false;
+    }
+  };
 </script>
 
 <template>
@@ -139,39 +167,12 @@
           {/each}
         {/each}
         <SumForm
+          enableInputs={true}
           sum={subtotal}
           label="Checkout"
           isPending={isPending}
           errorMsg={errorMsg}
-          onSubmit={async (coupon, customer) => {
-            isPending = true;
-            errorMsg = "";
-            
-            try {
-              const res = await fetch(`https://comaxp.herokuapp.com/api/customers/${customer}`, {
-                method: "get",
-                headers: new Headers({
-                  "Authorization": `Bearer ${token}`
-                })
-              });
-              const data = (await res.json());
-
-              // error guard
-              if (!data || !data.length) {
-                throw new Error("Incorrect customer code");
-              }
-
-              checkOutData.set({ coupon, customer });
-              
-              navigate("/placeorder");
-            }
-            catch (err) {
-              errorMsg = `${err}`;
-            }
-            finally {
-              isPending = false;
-            }
-          }}
+          onSubmit={checkout}
         />
       {:else}
         <div class="empty-basket">No product found in the basket.</div>

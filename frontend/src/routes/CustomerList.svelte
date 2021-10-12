@@ -28,35 +28,37 @@
 <template>
   <main>
     {#if list}
-      <div class="layout table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Full Name</th>
-              <th>Phone</th>
-              <th>City</th>
-              <th>State</th>
-              <th>Country</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each list as el, i}
-              <tr on:click={() => navigate(`/customers/${el.customerNumber}`)}>
-                <td>{i + 1}</td>
-                <td>{`${el.contactLastName} ${el.contactLastName}`}</td>
-                <td>{el.phone}</td>
-                <td>{el.city}</td>
-                <td>{el.state || ""}</td>
-                <td>{el.country}
-                  <div on:click|stopPropagation class="row-option">
-                    <i class="fas fa-clipboard"></i>
-                  </div>
-                </td>
+      <div class="layout">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Full Name</th>
+                <th>Phone</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Country</th>
               </tr>
-            {/each}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {#each list as el, i}
+                <tr on:click={() => navigate(`/customers/${el.customerNumber}`)}>
+                  <td>{i + 1}</td>
+                  <td>{`${el.contactLastName} ${el.contactLastName}`}</td>
+                  <td>{el.phone}</td>
+                  <td>{el.city}</td>
+                  <td>{el.state || ""}</td>
+                  <td>{el.country}
+                    <div on:click|stopPropagation class="row-option">
+                      <i class="fas fa-clipboard"></i>
+                    </div>
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
       </div>
     {:else}
       <FullWaiter />
@@ -68,153 +70,5 @@
   .layout {
     max-width: 900px;
     margin: 0 auto;
-  }
-
-  .table-container {
-    margin-top: 2em;
-    border: 1px solid #E1DEDE;
-    overflow-x: auto;
-  }
-
-  table {
-    position: relative;
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-    z-index: 0;
-
-    > thead {
-
-      > tr {
-        > th {
-          position: relative;
-          padding: 8px;
-          border: 1px solid #E1DEDE;
-          text-align: left;
-
-          > i {
-            position: absolute;
-            right: 4px;
-            top: 50%;
-            transform: translate(0, -50%);
-            cursor: pointer;
-          }
-        }
-
-        /* no. */
-        &:first-child {
-          > th:first-child {
-            text-align: center;
-            width: 48px;
-          }
-        }
-      }
-    }
-
-    > tbody {
-      > tr {
-        transition: background-color 0.3s;
-
-        &:hover {
-          background-color: whitesmoke;
-
-          > td:last-child {
-            > div {
-              opacity: 1;
-              transform: translate(-100%, -50%);
-            }
-          }
-        }
-
-        &.deleting {
-          background-color: #f6dfeb;
-        }
-
-        > td {
-          padding: 4px 8px;
-          white-space: nowrap;
-          border: 1px solid #E1DEDE;
-          overflow: hidden;
-          text-overflow: ellipsis;
-
-          &:first-child {
-            text-align: center;
-            font-weight: bold;
-          }
-
-          &:last-child {
-            position: relative;
-
-            > div {
-              display: flex;
-              align-items: center;
-              gap: 0.5em;
-              top: 50%;
-              right: 0;
-              position: absolute;
-              height: 100%;
-              transform: translate(0, -50%);
-              transition: 300ms;
-              opacity: 0;
-
-              > i {
-                cursor: pointer;
-              }
-            }
-          }
-
-          &:empty:after {
-            content: "N/A";
-            color: white;
-            font-weight: bold;
-            background-color: #AB1A1A;
-            padding: 0 4px;
-            border-radius: 2px;
-          }
-
-          &.editor {
-            text-align: center;
-
-            > i {
-              cursor: pointer;
-
-              &:not(:first-child) {
-                margin-left: 8px;
-              }
-
-              &:first-child {
-                color: #5d534a;
-              }
-
-              &:last-child {
-                color: #cd5d7d;
-              }
-            }
-          }
-
-          &.pending {
-            width: 68px;
-            height: 28px;
-          }
-
-          ol {
-            margin: 0;
-            padding-left: 2em;
-
-            li {
-              list-style-type: circle !important;
-            }
-          }
-        }
-
-        &.disabled {
-          background-color: lightgrey;
-
-          i {
-            color: #5d534a !important;
-          }
-        }
-      }
-    }
   }
 </style>

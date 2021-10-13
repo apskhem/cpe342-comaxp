@@ -1,6 +1,7 @@
 <script lang="ts">
   import FullWaiter from "../components/FullWaiter.svelte";
   import VendorView from "../components/VendorView.svelte";
+  import { FETCH_ROOT } from "../env.global";
 
   export let location: string;
 
@@ -9,7 +10,7 @@
 
   const start = async () => {
     isRequesting = true;
-    const res = await fetch("https://comaxp.herokuapp.com/api/catalogs");
+    const res = await fetch(`${FETCH_ROOT}/api/catalogs`);
     const data: Response.GetProductList = await res.json();
 
     if (data) {

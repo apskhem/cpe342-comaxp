@@ -1,6 +1,7 @@
 <script lang="ts">
   import { navigate } from "svelte-routing";
   import FullWaiter from "../components/FullWaiter.svelte";
+  import { FETCH_ROOT } from "../env.global";
   import { loginToken } from "../stores";
 
   export let location: string;
@@ -11,7 +12,7 @@
   loginToken.subscribe((value) => token = value);
 
   const start = async () => {
-    const res = await fetch("https://comaxp.herokuapp.com/api/customers", {
+    const res = await fetch(`${FETCH_ROOT}/api/customers`, {
       method: "get",
       headers: new Headers({
         "Authorization": `Bearer ${token}`

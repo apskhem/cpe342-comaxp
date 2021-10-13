@@ -2,6 +2,7 @@
   import { navigate } from "svelte-routing";
   import cx from "classnames";
   import { loginToken } from "../stores";
+  import { FETCH_ROOT } from "../env.global";
 
   export let location: string;
 
@@ -32,7 +33,7 @@
       const formData = new FormData(e.currentTarget);
       const encoded = encodeForm(formData);
 
-      const res = await fetch(`https://comaxp.herokuapp.com/api/login?${encoded}`);
+      const res = await fetch(`${FETCH_ROOT}/api/login?${encoded}`);
       const data: Response.Login = await res.json();
 
       if (data.Token) {

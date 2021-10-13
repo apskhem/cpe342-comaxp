@@ -1,6 +1,7 @@
 <script lang="ts">
   import FullWaiter from "../components/FullWaiter.svelte";
-import VendorView from "../components/VendorView.svelte";
+  import VendorView from "../components/VendorView.svelte";
+  import { FETCH_ROOT } from "../env.global";
   import { loginToken } from "../stores";
 
   export let id: string;
@@ -14,7 +15,7 @@ import VendorView from "../components/VendorView.svelte";
 
   const start = async () => {
     isRequesting = true;
-    const res = await fetch(`https://comaxp.herokuapp.com/api/catalogs/${id}`);
+    const res = await fetch(`${FETCH_ROOT}/api/catalogs/${id}`);
     products = await res.json();
 
     isRequesting = false;

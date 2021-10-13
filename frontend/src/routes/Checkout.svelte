@@ -2,6 +2,7 @@
   import { navigate } from "svelte-routing";
   import ProductCard from "../components/ProductCard.svelte";
   import SumForm from "../components/SumForm.svelte";
+  import { FETCH_ROOT } from "../env.global";
   import { checkoutData, cartProduct, loginToken } from "../stores";
 
   export let location: string;
@@ -107,7 +108,7 @@
     errorMsg = "";
     
     try {
-      const res = await fetch(`https://comaxp.herokuapp.com/api/customers/${customer}`, {
+      const res = await fetch(`${FETCH_ROOT}/api/customers/${customer}`, {
         method: "get",
         headers: new Headers({
           "Authorization": `Bearer ${token}`

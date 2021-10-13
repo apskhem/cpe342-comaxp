@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { FETCH_ROOT } from "../env.global";
   import { loginToken } from "../stores";
 
   export let id: string;
@@ -11,7 +12,7 @@
   let prof: Model.IEmployee;
 
   const start = async () => {
-    const res = await fetch(`https://comaxp.herokuapp.com/api/employees/${id}`, {
+    const res = await fetch(`${FETCH_ROOT}/api/employees/${id}`, {
       method: "get",
       headers: new Headers({
         "Authorization": `Bearer ${token}`

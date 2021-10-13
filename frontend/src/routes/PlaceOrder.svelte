@@ -1,7 +1,8 @@
 <script lang="ts">
   import { navigate } from "svelte-routing";
   import FullWaiter from "../components/FullWaiter.svelte";
-import SumForm from "../components/SumForm.svelte";
+  import SumForm from "../components/SumForm.svelte";
+  import { FETCH_ROOT } from "../env.global";
   import { checkoutData, cartProduct, loginToken } from "../stores";
 
   export let location: string;
@@ -31,7 +32,7 @@ import SumForm from "../components/SumForm.svelte";
       return;
     }
 
-    const res = await fetch(`https://comaxp.herokuapp.com/api/customers/${m_checkoutData.customer}`, {
+    const res = await fetch(`${FETCH_ROOT}/api/customers/${m_checkoutData.customer}`, {
       method: "get",
       headers: new Headers({
         "Authorization": `Bearer ${token}`
@@ -100,7 +101,7 @@ import SumForm from "../components/SumForm.svelte";
         body.set("discountCode", `${m_checkoutData.coupon}`);
       }
 
-      const res = await fetch(`https://comaxp.herokuapp.com/api/orders`, {
+      const res = await fetch(`${FETCH_ROOT}/api/orders`, {
         method: "post",
         headers: new Headers({
           "Authorization": `Bearer ${token}`

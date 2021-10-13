@@ -137,7 +137,6 @@
 
   // table customs
   .table-container {
-    margin-top: 2em;
     border: 1px solid #E1DEDE;
     overflow-x: auto;
   }

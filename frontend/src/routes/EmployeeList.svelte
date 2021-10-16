@@ -10,9 +10,11 @@
   let token = "";
   let list: null | Model.IEmployee[] = null;
   let employeeMap = new Map<number, string>();
-  let isAddingMode = false;
+  let supervisorMap = new Map<number, string>();
+  let isInAddingMode = false;
+  let isAddingPending = false;
   let form: HTMLFormElement;
-  const sortStateList = new Array(7).fill(0);
+  let errMsg = "";
 
   loginToken.subscribe((value) => token = value);
 
@@ -23,47 +25,27 @@
         "Authorization": `Bearer ${token}`
       })
     });
+
     list = await res.json();
 
-    for (const employee of list ?? []) {
-      employeeMap.set(employee.employeeNumber, employee.firstName + " " + employee.lastName);
-    }
+    setSupervisorMap(list ?? [])
+    setEmployeeMap(list ?? []);
   };
 
   start();
 
-  const sortList = (sort: keyof Model.IEmployee, index: number) => {
-    return () => {
-      if (list) {
-        list = list.sort((a, b) => {
-          const ac = sortStateList[index]
-          const ta = ac === 1 ? b[sort] : a[sort];
-          const tb = ac === 1 ? a[sort] : b[sort];
-
-          if (typeof ta === "string" && typeof tb === "string") {
-            return ta.localeCompare(tb)
-          }
-          else if (typeof ta === "number" && typeof tb === "number") {
-            return ta - tb;
-          }
-          else {
-            return (ta as any) - (tb as any);
-          }
-        });
-      }
-
-      setSortCaret(index);
-    };
+  const setEmployeeMap = (list: Model.IEmployee[]) => {
+    for (const employee of list) {
+      employeeMap.set(employee.employeeNumber, employee.firstName + " " + employee.lastName);
+    }
   };
 
-  const setSortCaret = (index: number) => {
-    const oldSortState = sortStateList[index];
-
-    for (const i of sortStateList.keys()) {
-      sortStateList[i] = 0;
+  const setSupervisorMap = (list: Model.IEmployee[]) => {
+    for (const employee of list) {
+      if (employee.jobTitle !== "Sales Rep") {
+        supervisorMap.set(employee.employeeNumber, employee.jobTitle);
+      }
     }
-
-    sortStateList[index] = oldSortState === 1 ? 2 : 1;
   };
 
   const renderCaret = (val: number) => {
@@ -79,11 +61,15 @@
   };
 
   const swapCreateMode = () => {
-    isAddingMode = !isAddingMode;
+    isInAddingMode = !isInAddingMode;
+    errMsg = "";
   };
 
   const submitAdding = async () => {
     const formData = new FormData(form);
+    
+    isAddingPending = true;
+    errMsg = "";
 
     try {
       const res = await fetch(`${FETCH_ROOT}/api/employees`, {
@@ -96,13 +82,18 @@
 
       const data = await res.json();
 
-      console.log(data);
+      if (data.errors) {
+        throw new Error(data.errors);
+      }
+      else {
+        form.reset();
+      }
     }
     catch (err) {
-
+      errMsg = `${err}`;
     }
     finally {
-
+      isAddingPending = false;
     }
   };
 </script>
@@ -114,40 +105,44 @@
         <div class="create-btn-container">
           <MajorButton
             width="200px"
-            label={isAddingMode ? "View Employee" : "Add Employee"}
+            label={isInAddingMode ? "View Employee" : "Add Employee"}
             on:click={swapCreateMode}
           />
         </div>
-        {#if isAddingMode}
+        {#if isInAddingMode}
           <form class="create-form" bind:this={form} on:submit|preventDefault={submitAdding}>
             <div class="form-half-grid">
               <aside>
                 <label for="firstName">First Name</label>
-                <input id="firstName" type="text" name="firstName" maxlength="50" required />
+                <input id="firstName" type="text" name="firstName" maxlength="50" disabled={isAddingPending} required />
               </aside>
               <aside>
                 <label for="lastName">Last Name</label>
-                <input id="lastName" type="text" name="lastName" maxlength="50" required />
+                <input id="lastName" type="text" name="lastName" maxlength="50" disabled={isAddingPending} required />
               </aside>
             </div>
             <div class="form-half-grid">
               <aside>
                 <label for="extension">Extension</label>
-                <input id="extension" type="text" name="extension" required />
+                <input id="extension" type="text" name="extension" disabled={isAddingPending} required />
               </aside>
               <aside>
                 <label for="officeCode">Office Code</label>
-                <input id="officeCode" type="text" name="officeCode" required />
+                <input id="officeCode" type="text" name="officeCode" disabled={isAddingPending} required />
               </aside>
             </div>
             <div class="form-half-grid">
               <div>
                 <label for="reportsTo">Supervisor</label>
-                <input id="reportsTo" type="text" name="reportsTo" required />
+                <select name="reportsTo" id="reportsTo" disabled={isAddingPending} required>
+                  {#each Array.from(supervisorMap) as [ emNum, position ]}
+                    <option value={emNum}>{employeeMap.get(emNum)} ({position})</option>
+                  {/each}
+                </select>
               </div>
               <div>
                 <label for="jobTitle">Position</label>
-                <select name="jobTitle" id="jobTitle" required>
+                <select name="jobTitle" id="jobTitle" disabled={isAddingPending} required>
                   <optgroup label="Representative">
                     <option value="Sales Rep" selected>Sales Rep</option>
                   </optgroup>
@@ -167,19 +162,23 @@
             </div>
             <div>
               <label for="email">Email</label>
-              <input id="email" type="email" name="email" maxlength="100" required />
+              <input id="email" type="email" name="email" maxlength="100" disabled={isAddingPending} required />
             </div>
             <div>
               <label for="password">Password</label>
-              <input id="password" type="password" name="password" minlength="6" required />
+              <input id="password" type="password" name="password" minlength="6" disabled={isAddingPending} required />
             </div>
             <div class="form-btn-container">
               <MajorButton
                 width="200px"
                 type="submit"
                 label="Submit"
+                isPending={isAddingPending}
               />
             </div>
+            {#if errMsg}
+              <div class="err-msg">{errMsg}</div>
+            {/if}
           </form>
         {:else}
           <div class="table-container">
@@ -187,12 +186,12 @@
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Full Name <i on:click={sortList("firstName", 1)} class={renderCaret(sortStateList[1])}></i></th>
-                  <th>Extension <i on:click={sortList("extension", 2)} class={renderCaret(sortStateList[2])}></i></th>
-                  <th>Email <i on:click={sortList("email", 3)} class={renderCaret(sortStateList[3])}></i></th>
-                  <th>Reports To <i on:click={sortList("reportsTo", 4)} class={renderCaret(sortStateList[4])}></i></th>
-                  <th>Job Title <i on:click={sortList("jobTitle", 5)} class={renderCaret(sortStateList[5])}></i></th>
-                  <th>Office Code <i on:click={sortList("officeCode", 6)} class={renderCaret(sortStateList[6])}></i></th>
+                  <th>Full Name</th>
+                  <th>Extension</th>
+                  <th>Email</th>
+                  <th>Reports</th>
+                  <th>Job Title</th>
+                  <th>Office Code</th>
                 </tr>
               </thead>
               <tbody>
@@ -268,5 +267,11 @@
 
   .table-container {
     margin-top: 1em;
+  }
+
+  .err-msg {
+    color: #AB1A1A;
+    font-size: small;
+    text-align: center;
   }
 </style>

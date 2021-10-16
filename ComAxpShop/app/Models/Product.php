@@ -14,6 +14,8 @@ class Product extends Model {
     const UPDATED_AT = null;
     const CREATED_AT = null;
 
+    public $incrementing = false;
+
     protected $fillable = [
         'productCode',
         'productName',

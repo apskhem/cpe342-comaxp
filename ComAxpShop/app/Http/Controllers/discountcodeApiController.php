@@ -12,33 +12,48 @@ use App\Models\DiscountCode;
 class discountcodeApiController extends Controller
 {
     public function getDiscountCode(){
-        $discountCodes = DiscountCode::query()
-                        ->orderBy('discountCode', 'asc')
-                        ->get();
+        $user = auth()->user();
 
-        return $discountCodes;
+        if($user->tokenCan('Employee')){
+            $discountCodes = DiscountCode::query()
+                            ->orderBy('discountCode', 'asc')
+                            ->get();
+
+            return $discountCodes;
+        }
+        else{
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
+        }
     }
 
     public function addDiscountCode(Request $request){
-        $validator = Validator::make(request()->all(), [
-            'discountCode' => 'required|unique:discountcodes,discountCode|size:8',
-            'endDate' => 'required|date_format:Y-m-d|after_or_equal:today',
-            'amount' => 'required|integer|min:0',
-            'discountPrice' => 'required|integer|min:0',
-        ]);
+        $user = auth()->user();
 
-        if($validator->fails()){
-            return response()->json(['errors' => $validator->errors()], 400);
+        if($user->tokenCan('VP Marketing')){
+            $validator = Validator::make(request()->all(), [
+                'discountCode' => 'required|unique:discountcodes,discountCode|size:8',
+                'endDate' => 'required|date_format:Y-m-d|after_or_equal:today',
+                'amount' => 'required|integer|min:0',
+                'discountPrice' => 'required|integer|min:0',
+            ]);
+
+            if($validator->fails()){
+                return response()->json(['errors' => $validator->errors()], 400);
+            }
+
+            $dateToday = Carbon\Carbon::now()->setTimezone('Asia/Phnom_Penh')->format('Y-m-d');
+
+            $discountCode = $request->all();
+            $discountCode['startDate'] = $dateToday;
+
+            $fetch = $this->addToDB($discountCode);
+        
+            return response()->json(['message' => 'add discount code successfully']);
+
         }
-
-        $dateToday = Carbon\Carbon::now()->setTimezone('Asia/Phnom_Penh')->format('Y-m-d');
-
-        $discountCode = $request->all();
-        $discountCode['startDate'] = $dateToday;
-
-        $fetch = $this->addToDB($discountCode);
-    
-        return response()->json(['message' => 'add discount code successfully']);
+        else{
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
+        }
     }
 
     public function addToDB($discountCodeData){
@@ -52,9 +67,11 @@ class discountcodeApiController extends Controller
     }
 
     static function deleteDiscountCode($discountCode){
-        // $user = auth()->user();
+        $user = auth()->user();
         
-        // if($user->tokenCan('Salesman')){  
+        // if($user->tokenCan('VP Marketing') || $user->tokenCan('Salesman')){  
+        if($user->tokenCan('Salesman')){  
+
             $input = ['discountCode' => $discountCode];
 
             $validator = Validator::make($input, [
@@ -69,58 +86,70 @@ class discountcodeApiController extends Controller
             $targetDiscountCode->delete();
 
             return response()->json(['message' => 'delete discount code successfully']);
-        // }
-        // else{
-        //     return response()->json(['errors' => 'you have no permission to access this page'], 401);
-        // }
+        }
+        else{
+            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+        }
     }
 
     public function updateDiscountCode($discountCode, Request $request){
-            $input = $request->all();
-            $input['discountCode'] = $discountCode;
+            $user = auth()->user();
 
-            $validator = Validator::make($input, [
-                'discountCode' => 'required|exists:discountcodes,discountCode',
-                'startDate' => 'date_format:Y-m-d',
-                'endDate' => 'date_format:Y-m-d',
-                'amount' => 'integer|min:0',
-                'discountPrice' => 'integer|min:0',
-            ]);
+            // if($user->tokenCan('VP Marketing')){  
+            if($user->tokenCan('Employee')){  
+                $input = $request->all();
+                $input['discountCode'] = $discountCode;
 
-            if($validator->fails()){
-                return response()->json(['errors' => $validator->errors()], 401);
+                $validator = Validator::make($input, [
+                    'discountCode' => 'required|exists:discountcodes,discountCode',
+                    'startDate' => 'date_format:Y-m-d',
+                    'endDate' => 'date_format:Y-m-d',
+                    'amount' => 'integer|min:0',
+                    'discountPrice' => 'integer|min:0',
+                ]);
+
+                if($validator->fails()){
+                    return response()->json(['errors' => $validator->errors()], 401);
+                }
+
+                $targetDiscountCode = DiscountCode::find($discountCode);
+                $targetDiscountCode->fill($input)->update();
+
+                return response()->json(['message' => 'update discount code successfully']);
             }
-
-            $targetDiscountCode = DiscountCode::find($discountCode);
-            $targetDiscountCode->fill($input)->update();
-
-            return response()->json(['message' => 'update discount code successfully']);
+            else{
+                return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            }
     }
 
     public function isDiscountCodeAvailable($discountCode){
-        $input = ['discountCode' => $discountCode];
+        $user = auth()->user();
 
-        $validator = Validator::make($input, [
-            'discountCode' => 'required|exists:discountcodes,discountCode',
-            'startDate' => 'date_format:Y-m-d',
-            'endDate' => 'date_format:Y-m-d',
-            'amount' => 'integer|min:0',
-            'discountPrice' => 'integer|min:0',
-        ]);
+        if($user->tokenCan('Salesman')){
 
-        if($validator->fails()){
+            $input = ['discountCode' => $discountCode];
+
+            $validator = Validator::make($input, [
+                'discountCode' => 'required|exists:discountcodes,discountCode',
+            ]);
+
+            if($validator->fails()){
+                return response()->json([
+                    'isAvailable' => 'false',
+                    'message' => 'this discount code does not exist'
+                ]);
+            }
+
+            $targetDiscountCode = DiscountCode::find($discountCode);
+
             return response()->json([
-                'isAvailable' => 'false',
-                'message' => 'this discount code does not exist'
+                'isAvailable' => 'true',
+                'discountCode' => $targetDiscountCode
             ]);
         }
-
-        $targetDiscountCode = DiscountCode::find($discountCode);
-
-        return response()->json([
-            'isAvailable' => 'true',
-            'discountCode' => $targetDiscountCode
-        ]);
+        else{
+            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+        }
     }
 
     static function decreaseDiscountCode($discountCode){

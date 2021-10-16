@@ -21,7 +21,21 @@ class customerApiController extends Controller
             return $customers;
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
+        }
+    }
+
+    public function getCustomerTuple($customerNumber){
+        $user = auth()->user();
+        if($user->tokenCan('Employee')){
+            $customer = Customer::query()
+                        ->where('customerNumber', $customerNumber)
+                        ->get();
+
+            return $customer;
+        }
+        else{
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
     
@@ -46,7 +60,7 @@ class customerApiController extends Controller
             ]);
 
             if($validator->fails()){
-                return response()->json(['errors' => $validator->errors()], 401);
+                return response()->json(['errors' => $validator->errors()], 400);
             }
 
             $customer = $request->all();
@@ -58,7 +72,7 @@ class customerApiController extends Controller
             return response()->json(['message' => 'add customer successfully']);
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -92,7 +106,7 @@ class customerApiController extends Controller
             ]);
 
             if($validator->fails()){
-                return response()->json(['errors' => $validator->errors()], 401);
+                return response()->json(['errors' => $validator->errors()], 400);
             }
 
             $targetCustomer = Customer::where('customerNumber', $customerNumber)->first();
@@ -101,7 +115,7 @@ class customerApiController extends Controller
             return response()->json(['message' => 'delete customer successfully']);
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -117,7 +131,7 @@ class customerApiController extends Controller
             ]);
 
             if($validator->fails()){
-                return response()->json(['errors' => $validator->errors()], 401);
+                return response()->json(['errors' => $validator->errors()], 400);
             }
 
             $targetCustomer = Customer::find($customerNumber);
@@ -126,7 +140,7 @@ class customerApiController extends Controller
             return response()->json(['message' => 'update customer successfully']);
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
     

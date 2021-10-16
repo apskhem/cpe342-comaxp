@@ -22,7 +22,7 @@ class authApiController extends Controller
 
         if($validator->fails()){
             return response()->json([
-                'errors' => $validator->errors()], 401);
+                'errors' => $validator->errors()], 400);
         }
 
         $credentials = $request->only('employeeNumber', 'password');
@@ -45,9 +45,9 @@ class authApiController extends Controller
             }
 
             switch($jobTitle){
-                case 'President': $token = $user->createToken($userFullName, ['Employee', 'President']); break;
-                case 'VP Sales' : $token = $user->createToken($userFullName, ['Employee', 'Salesman', 'VP']); break;
-                case 'VP Manager' : $token = $user->createToken($userFullName, ['Employee', 'VP']); break;
+                case 'President': $token = $user->createToken($userFullName, ['Employee', $jobTitle]); break;
+                case 'VP Sales' : $token = $user->createToken($userFullName, ['Employee', 'Salesman', 'VP', $jobTitle]); break;
+                case 'VP Marketing' : $token = $user->createToken($userFullName, ['Employee', 'VP', $jobTitle]); break;
                 case 'Sales Rep' : $token = $user->createToken($userFullName, ['Employee', 'Salesman']); break;
             }
 

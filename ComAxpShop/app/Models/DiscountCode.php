@@ -11,6 +11,7 @@ class DiscountCode extends Model
 
     protected $table = "discountcodes";
     protected $primaryKey = 'discountCode';
+    public $incrementing = false;
 
     const UPDATED_AT = null;
     const CREATED_AT = null;

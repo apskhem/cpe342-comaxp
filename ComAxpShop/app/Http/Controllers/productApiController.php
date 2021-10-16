@@ -10,45 +10,41 @@ use Validator;
 
 class productApiController extends Controller
 {
-    public function getCatalog(Request $request){
-        $type = $request['type'];
+    public function getCatalog(){
+        $products = DB::table('products')
+                    ->get();
+        return $products;
+    }
 
-        switch($type){
-            case 0: // show all PRODUCT
-                $products = DB::table('products')
-                            ->select('productName', 'buyPrice', 'quantityInStock')
-                            ->orderBy('productName', 'asc')
-                            ->get();
-                return $products;
+    public function getCatalogFilterBy($productVendor){
+        // if($input['value'] != ""){
+        //     $products = DB::table('products')
+        //             ->where($input['value'], $attribute)
+        //             ->orderBy($attribute, 'asc')
+        //             ->get();
+        // }
 
-            case 1: // show by PRODUCT VENDOR
-                $productVendor = $request['productVendor'];
-                $products = DB::table('products')
-                            ->select('productName', 'buyPrice', 'quantityInStock')
-                            ->where('productVendor', $productVendor)
-                            ->orderBy('productVendor', 'asc')
-                            ->get();
-                return $products;
+        $products = DB::table('products')
+                    ->where('productVendor', $productVendor)
+                    ->orderBy('productVendor', 'asc')
+                    ->get();
+        return $products;
+    }
 
-            case 2: // show by PRODUCT SCALE
-                $productScale = $request['productScale'];
-                $products = DB::table('products')
-                            ->select('productName', 'buyPrice', 'quantityInStock')
-                            ->where('productScale', $productScale)
-                            ->orderBy('productVendor', 'asc')
-                            ->get();
-                return $products;
+    public function getProductTuple($productCode){
+        $user = auth()->user();
+        if($user->tokenCan('Employee')){
+            $product = Product::query()
+                        ->where('productCode', $productCode)
+                        ->get();
 
-            case 3: // show by PRODUCT LINE
-                $productLine = $request['productLine'];
-                $products = DB::table('products')
-                            ->select('productName', 'buyPrice', 'quantityInStock')
-                            ->where('productLine', $productLine)
-                            ->orderBy('productLine', 'asc')
-                            ->get();
-                return $products;
+            return $product;
+        }
+        else{
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
+
 
     public function getProduct(){
 
@@ -62,7 +58,7 @@ class productApiController extends Controller
             return $products;
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -83,7 +79,7 @@ class productApiController extends Controller
             ]);
 
             if($validator->fails()){
-                return response()->json(['errors' => $validator->errors()], 400);
+                return response()->json(['errors' => $validator->errors()], 401);
             }
             $product = $request->all();
 
@@ -92,7 +88,7 @@ class productApiController extends Controller
             return response()->json(['message' => 'add product success']);
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -121,7 +117,7 @@ class productApiController extends Controller
             ]);
 
             if($validator->fails()){
-                return response()->json(['errors' => $validator->errors()], 400);
+                return response()->json(['errors' => $validator->errors()], 401);
             }
 
             $targetProduct = Product::where('productCode', $productCode)->first();
@@ -130,7 +126,7 @@ class productApiController extends Controller
             return response()->json(['message' => 'delete product success']);
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -146,7 +142,7 @@ class productApiController extends Controller
             ]);
 
             if($validator->fails()){
-                return response()->json(['errors' => $validator->errors()], 400);
+                return response()->json(['errors' => $validator->errors()], 401);
             }
 
             $targetProduct = Product::find($productCode);
@@ -155,7 +151,7 @@ class productApiController extends Controller
             return response()->json(['message' => 'update product success']);
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 

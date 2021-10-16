@@ -24,7 +24,25 @@ class employeeApiController extends Controller
             return $employees;
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
+        }
+    }
+
+    public function getEmployeeTuple($employeeNumber){
+        $user = auth()->user();
+        if($user->tokenCan('Employee')){
+            $employee = Employee::query()
+                        ->where('employeeNumber', $employeeNumber)
+                        ->get();
+
+            foreach($employee as $targetEmployee) {
+                $targetEmployee->makeHidden(['password']);
+            }
+
+            return $employee;
+        }
+        else{
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -55,7 +73,7 @@ class employeeApiController extends Controller
             return response()->json(['message' => 'add employee successfully']);
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -93,7 +111,7 @@ class employeeApiController extends Controller
             return response()->json(['message' => 'delete employee successfully']);
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -117,7 +135,7 @@ class employeeApiController extends Controller
             return response()->json(['message' => 'upadate employee successfully']);
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -147,7 +165,7 @@ class employeeApiController extends Controller
             }
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 

@@ -28,7 +28,7 @@ class paymentApiController extends Controller
             return $transactions;
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -44,7 +44,7 @@ class paymentApiController extends Controller
             ]);
 
             if($validator->fails()){
-                return response()->json(['errors' => $validator->errors()], 401);
+                return response()->json(['errors' => $validator->errors()], 400);
             }
 
             $transaction = $request->all(); // array of request
@@ -98,7 +98,7 @@ class paymentApiController extends Controller
             }
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -124,7 +124,7 @@ class paymentApiController extends Controller
             ]);
 
             if($validator->fails()){
-                return response()->json(['errors' => $validator->errors()], 401);
+                return response()->json(['errors' => $validator->errors()], 400);
             }
 
             $targetTransaction = Payment::where('orderNumber', $orderNumber)->first();
@@ -139,7 +139,7 @@ class paymentApiController extends Controller
             return response()->json(['message' => 'delete transaction successfully']);
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -156,7 +156,7 @@ class paymentApiController extends Controller
             ]);
 
             if($validator->fails()){
-                return response()->json(['errors' => $validator->errors()], 401);
+                return response()->json(['errors' => $validator->errors()], 400);
             }
 
             $input = $request->all();
@@ -167,7 +167,7 @@ class paymentApiController extends Controller
             return response()->json(['message' => 'update transaction successfully']);
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 

@@ -12,6 +12,8 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
 
+use App\Http\Controllers\preorderApiController;
+
 class orderApiController extends Controller
 {
     public function getAllOrder(){
@@ -19,13 +21,27 @@ class orderApiController extends Controller
         
         if($user->tokenCan('Employee')){  
             $orders = DB::table('orders')
-                            ->join('orderdetails', 'orders.orderNumber', '=', 'orderdetails.orderNumber')
-                            ->orderBy('orders.orderNumber', 'asc')
+                            ->orderBy('orderNumber', 'asc')
                             ->get();
             return $orders;
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
+        }
+    }
+
+    public function getOrderTuple($orderNumber){
+        $user = auth()->user();
+        if($user->tokenCan('Employee')){
+            $order = Order::query()
+                        ->join('orderdetails', 'orders.orderNumber', '=', 'orderdetails.orderNumber')
+                        ->where('orders.orderNumber', $orderNumber)
+                        ->get();
+
+            return $order;
+        }
+        else{
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -36,11 +52,9 @@ class orderApiController extends Controller
             $products = $request->only(['productCode', 'quantityOrdered', 'priceEach', 'orderLineNumber']);
             $input = $request->except(['productCode', 'quantityOrdered', 'priceEach', 'orderLineNumber']);
 
-            $validStatus = ['canceled', 'disputed', 'in process', 'on hold', 'resloved','shipped'];
+            $validStatus = ['in process', 'preorder'];
 
             // validate
-            
-            $productValidator = $this->productValidator($products);
 
             $generalValidator = Validator::make($input, [
                 'requiredDate' => 'required|date_format:Y-m-d|after_or_equal:today',
@@ -49,14 +63,44 @@ class orderApiController extends Controller
                 'comments' => 'nullable',
                 'customerNumber' => 'required|exists:customers,customerNumber',
                 'discountCode' => 'nullable|exists:discountcodes,discountCode|size:8',
+                'upfrontPrice' => 'required_if:status,==,preorder|numeric',
             ]);
 
             if($generalValidator->fails()){
                 return response()->json(['errors' => $generalValidator->errors()], 400);
             }
 
-            if($productValidator->fails){
-                return response()->json($productValidator->errors, 400);
+            $productArr = explode(',', $products['productCode']);
+            $quantityArr = explode(',', $products['quantityOrdered']);
+            $priceArr = explode(',', $products['priceEach']);
+            $orderLineArr = explode(',', $products['orderLineNumber']);
+            $productCount = count($productArr);
+
+            for($i = 0; $i < $productCount; $i++){
+                $product = [
+                    'productCode' => $productArr[$i],
+                    'quantityOrdered' => $quantityArr[$i],
+                    'priceEach' => $priceArr[$i],
+                    'orderLineNumber' => $orderLineArr[$i],
+                ];
+    
+                $productValidator = Validator::make($product, [
+                    'productCode' => 'required|exists:products,productCode',
+                    'quantityOrdered' => 'required|integer|min:0',
+                    'priceEach' => 'required|numeric',
+                    'orderLineNumber' => 'required|integer',
+                ]);
+
+                if($productValidator->fails()){
+                    return response()->json($productValidator->errors(), 400);
+                }
+
+                if($input['status'] == 'preorder'){        // normal product
+                    $isAvailable = $this->isProductAvailable($product);
+                    if(!$isAvailable){
+                        return response()->json(['message' => "there are not enough ".$product['productCode']." for sale"], 400);
+                    }
+                }
             }
 
             // order
@@ -68,15 +112,27 @@ class orderApiController extends Controller
             $order['orderDate'] = $dateToday;
             $fetch = $this->addOrderToDB($order);
 
-            // // order detail and calculate gained point
+            $orderNumber = $fetch['orderNumber'];       // get orderNumber
 
+            // preorder
+            if($input['status'] == 'preorder'){
+                $preOrder = [
+                    'orderNumber' => $orderNumber,
+                    'upfrontPrice' => $input['upfrontPrice'],
+                ];
+
+                preorderApiController::addPreOrder($preOrder);  // add to preorder table 
+            }
+            
+            // order detail and calculate gained point
             $productArr = explode(',', $products['productCode']);
             $quantityArr = explode(',', $products['quantityOrdered']);
             $priceArr = explode(',', $products['priceEach']);
             $orderLineArr = explode(',', $products['orderLineNumber']);
             $productCount = count($productArr);
 
-            $orderNumber = $fetch['orderNumber'];
+            $totalPrice = 0;
+
 
             for($i = 0; $i < $productCount; $i++){
                 $orderDetail = [
@@ -87,12 +143,19 @@ class orderApiController extends Controller
                     'orderLineNumber' => $orderLineArr[$i],
                 ];
                 $this->addOrderDetailToDB($orderDetail);
+
+                $totalPrice += $orderDetail['quantityOrdered']*$orderDetail['priceEach'];
             }
 
-            return response()->json(['message' => 'add order success']);
+            if($input['status'] == 'preorder') $totalPrice /= 2;
+
+            return response()->json([
+                'message' => 'add order success',
+                'totalPrice' => $totalPrice
+            ]);
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -129,7 +192,7 @@ class orderApiController extends Controller
             ]);
 
             if($validator->fails()){
-                return response()->json(['errors' => $validator->errors()], 401);
+                return response()->json(['errors' => $validator->errors()], 400);
             }
 
             $targetOrder = Order::where('orderNumber', $orderNumber)->first();
@@ -138,7 +201,7 @@ class orderApiController extends Controller
             return response()->json(['message' => 'delete order successfully']);
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
     }
 
@@ -157,7 +220,7 @@ class orderApiController extends Controller
             ]);
 
             if($validator->fails()){
-                return response()->json(['errors' => $validator->errors()], 401);
+                return response()->json(['errors' => $validator->errors()], 400);
             }
 
             $targerOrder = Order::find($orderNumber);
@@ -166,51 +229,8 @@ class orderApiController extends Controller
             return response()->json(['message' => 'update order successfully']);
         }
         else{
-            return response()->json(['errors' => 'you have no permission to access this page'], 401);
+            return response()->json(['errors' => 'you have no permission to access this page'], 403);
         }
-    }
-
-    public function productValidator($products){
-        $productArr = explode(',', $products['productCode']);
-        $quantityArr = explode(',', $products['quantityOrdered']);
-        $priceArr = explode(',', $products['priceEach']);
-        $orderLineArr = explode(',', $products['orderLineNumber']);
-        $productCount = count($productArr);
-
-        for($i = 0; $i < $productCount; $i++){
-            $product = [
-                'productCode' => $productArr[$i],
-                'quantityOrdered' => $quantityArr[$i],
-                'priceEach' => $priceArr[$i],
-                'orderLineNumber' => $orderLineArr[$i],
-            ];
-
-            $productValidator = Validator::make($product, [
-                'productCode' => 'required|exists:products,productCode',
-                'quantityOrdered' => 'required|integer|min:0',
-                'priceEach' => 'required|numeric',
-                'orderLineNumber' => 'required|integer',
-            ]);
-
-            $returnedObject = (object) [
-                'fails' => false,
-                'errors',
-            ];
-
-            if($productValidator->fails()){
-                $returnedObject->fails = true;
-                $returnedObject->errors = $productValidator->errors();
-                return $returnedObject;
-            }
-
-            $isAvailable = $this->isProductAvailable($product);
-            if(!$isAvailable){
-                $returnedObject->fails = true;
-                $returnedObject->errors = ['quantityOrdered' => "Product amount is not enough for purchase"];
-                return $returnedObject;
-            }
-        }
-        return $returnedObject;
     }
 
     public function isProductAvailable($product){

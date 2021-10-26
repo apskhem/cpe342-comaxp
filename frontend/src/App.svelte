@@ -108,6 +108,12 @@
     &::-webkit-inner-spin-button { -webkit-appearance: none; }
   }
 
+  select {
+    &:focus {
+      outline: none;
+    }
+  }
+
   a {
     text-decoration: none;
 

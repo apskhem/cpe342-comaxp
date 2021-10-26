@@ -48,18 +48,6 @@
     }
   };
 
-  const renderCaret = (val: number) => {
-    if (val === 1) {
-      return "fas fa-sort-up"
-    }
-    else if (val === 2) {
-      return "fas fa-sort-down";
-    }
-    else {
-      return "fas fa-sort";
-    }
-  };
-
   const swapCreateMode = () => {
     isInAddingMode = !isInAddingMode;
     errMsg = "";
@@ -91,6 +79,8 @@
     }
     catch (err) {
       errMsg = `${err}`;
+
+      console.log(err);
     }
     finally {
       isAddingPending = false;

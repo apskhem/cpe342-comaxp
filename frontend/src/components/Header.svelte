@@ -230,9 +230,11 @@
         margin-top: 1em;
         border-radius: 8px 8px 0 0;
         overflow: hidden;
+        pointer-events: none;
         opacity: 0;
 
         &.show {
+          pointer-events: auto;
           opacity: 1;
         }
 

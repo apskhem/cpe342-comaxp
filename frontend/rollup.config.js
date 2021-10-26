@@ -19,7 +19,7 @@ function serve() {
 	return {
 		writeBundle() {
 			if (server) return;
-			server = require("child_process").spawn("npm", ["run", "start", "--", "--dev"], {
+			server = require("child_process").spawn("npm", ["run", "start", "--", "--dev", "--port 3000"], {
 				stdio: ["ignore", "inherit", "inherit"],
 				shell: true
 			});
@@ -42,8 +42,6 @@ export default {
 		// teach rollup how to handle typescript imports
 		typescript({ sourceMap: !production }),
 		svelte({
-			generate: "ssr",
-			hydratable: true,
 			preprocess: sveltePreprocess({
 			   	sourceMap: !production,
 			   	scss: {
@@ -57,6 +55,8 @@ export default {
 			   	}
 			}),
 			compilerOptions: {
+				// generate: "ssr",
+				// hydratable: true,
 				// enable run-time checks when not in production
 				dev: !production
 			}

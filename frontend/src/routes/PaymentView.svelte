@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { navigate } from "svelte-routing";
+  import { navigate, Link } from "svelte-routing";
   import FullWaiter from "../components/FullWaiter.svelte";
   import MajorButton from "../components/MajorButton.svelte";
   import { FETCH_ROOT } from "../env.global";
@@ -8,28 +8,39 @@
   export let id: string;
   export let location: string;
 
-  type Item = Model.ICustomer;
+  type Item = Model.IPayment;
 
   let token = "";
   let isEditing = false;
   let isDeletingPending = false;
   let isSubmitingPending = false;
-  let payload: Item;
+  let mainPayload: Item;
+  let customerPayload: Model.ICustomer;
   let changeMap = new Map<keyof Item, string>();
 
   loginToken.subscribe((value) => token = value);
 
   const start = async () => {
-    const res = await fetch(`${FETCH_ROOT}/api/customers/${id}`, {
+    const res = await fetch(`${FETCH_ROOT}/api/payments/${id}`, {
       method: "get",
       headers: new Headers({
         "Authorization": `Bearer ${token}`
       })
     });
 
-    payload = (await res.json())[0];
+    const tempPayload: Item = (await res.json())[0];
 
-    console.log(payload);
+    const res2 = await fetch(`${FETCH_ROOT}/api/customers/${tempPayload.customerNumber}`, {
+      method: "get",
+      headers: new Headers({
+        "Authorization": `Bearer ${token}`
+      })
+    });
+
+    customerPayload = (await res2.json())[0];
+    mainPayload = tempPayload
+
+    console.log(mainPayload);
   };
 
   start();
@@ -53,7 +64,7 @@
       });
 
       // send request
-      const res = await fetch(`${FETCH_ROOT}/api/customers/${id}`, {
+      const res = await fetch(`${FETCH_ROOT}/api/payments/${id}`, {
         method: "put",
         headers: new Headers({
           "Authorization": `Bearer ${token}`
@@ -86,7 +97,7 @@
 
     try {
       // send request
-      const res = await fetch(`${FETCH_ROOT}/api/customers/${id}`, {
+      const res = await fetch(`${FETCH_ROOT}/api/payments/${id}`, {
         method: "delete",
         headers: new Headers({
           "Authorization": `Bearer ${token}`
@@ -95,7 +106,7 @@
 
       // handle error
       if (res.status === 200) {
-        navigate(`/customers`, { replace: true });
+        navigate(`/payments`, { replace: true });
       }
       else {
         throw new Error(res.statusText);
@@ -118,7 +129,7 @@
 
 <template>
   <main>
-    {#if payload}
+    {#if mainPayload}
       <div class="layout">
         <div class="two-grid">
           <aside>
@@ -130,99 +141,33 @@
             <section class="info-header">
               <div class="id">#{id}</div>
               <div>
-                <span class="name">{payload.customerName}</span>
+                <Link to={`/customers/${customerPayload.customerNumber}`}>
+                  <span class="name">{customerPayload.customerName}</span>
+                </Link>
               </div>
             </section>
             <section class="form-information">
-              <aside>Contact First Name:</aside>
+              <aside>Cheque Number:</aside>
               <input
                 type="text"
-                value={payload.contactFirstName}
+                value={mainPayload.checkNumber}
+                disabled
+              >
+              <aside>Payment Date:</aside>
+              <input
+                type="date"
+                value={mainPayload.paymentDate}
                 disabled={!isEditing}
                 required
-                on:change={handleInputChange("contactFirstName")}
+                on:change={handleInputChange("paymentDate")}
               >
-              <aside>Contact Last Name:</aside>
+              <aside>Amount:</aside>
               <input
                 type="text"
-                value={payload.contactLastName}
+                value={mainPayload.amount}
                 disabled={!isEditing}
                 required
-                on:change={handleInputChange("contactLastName")}
-              >
-              <aside>Phone:</aside>
-              <input
-                type="text"
-                value={payload.phone}
-                disabled={!isEditing}
-                required
-                on:change={handleInputChange("phone")}
-              >
-              <aside>Primary Address:</aside>
-              <input
-                type="text"
-                value={payload.addressLine1}
-                disabled={!isEditing}
-                required
-                on:change={handleInputChange("addressLine1")}
-              >
-              <aside>Secondary Address:</aside>
-              <input
-                type="text"
-                value={payload.addressLine2}
-                disabled={!isEditing}
-                on:change={handleInputChange("addressLine2")}
-              >
-              <aside>City:</aside>
-              <input
-                type="text"
-                value={payload.city}
-                disabled={!isEditing}
-                on:change={handleInputChange("city")}
-              >
-              <aside>State:</aside>
-              <input
-                type="text"
-                value={payload.state}
-                disabled={!isEditing}
-                on:change={handleInputChange("state")}
-              >
-              <aside>Postal Code:</aside>
-              <input
-                type="text"
-                value={payload.postalCode}
-                disabled={!isEditing}
-                on:change={handleInputChange("postalCode")}
-              >
-              <aside>Country:</aside>
-              <input
-                type="text"
-                value={payload.country}
-                disabled={!isEditing}
-                on:change={handleInputChange("country")}
-              >
-              <aside>Personal Sales:</aside>
-              <input
-                type="number"
-                value={payload.salesRepEmployeeNumber}
-                disabled={!isEditing}
-                on:change={handleInputChange("salesRepEmployeeNumber")}
-              >
-              <aside>Credit Limit:</aside>
-              <input
-                type="number"
-                value={payload.creditLimit}
-                disabled={!isEditing}
-                min="2"
-                max="10"
-                on:change={handleInputChange("creditLimit")}
-              >
-              <aside>Member Point:</aside>
-              <input
-                type="number"
-                value={payload.memberPoint}
-                disabled={!isEditing}
-                on:change={handleInputChange("memberPoint")}
+                on:change={handleInputChange("amount")}
               >
             </section>
             <section class="danger-zone">
@@ -248,7 +193,6 @@
     {/if}
   </main>
 </template>
-
 
 <style lang="scss">
   .layout {

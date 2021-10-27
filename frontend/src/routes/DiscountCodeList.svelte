@@ -1,14 +1,14 @@
 <script lang="ts">
   import { navigate } from "svelte-routing";
   import FullWaiter from "../components/FullWaiter.svelte";
-import MajorButton from "../components/MajorButton.svelte";
+  import MajorButton from "../components/MajorButton.svelte";
   import { FETCH_ROOT } from "../env.global";
   import { loginToken } from "../stores";
 
   export let location: string;
 
   let token = "";
-  let list: Model.IPayment[];
+  let list: Model.IDiscountCode[];
   let isInAddingMode = false;
   let isAddingPending = false;
   let form: HTMLFormElement;
@@ -17,7 +17,7 @@ import MajorButton from "../components/MajorButton.svelte";
   loginToken.subscribe((value) => token = value);
 
   const start = async () => {
-    const res = await fetch(`${FETCH_ROOT}/api/payments`, {
+    const res = await fetch(`${FETCH_ROOT}/api/discountcodes`, {
       method: "get",
       headers: new Headers({
         "Authorization": `Bearer ${token}`
@@ -46,7 +46,7 @@ import MajorButton from "../components/MajorButton.svelte";
 
     try {
       // send request
-      const res = await fetch(`${FETCH_ROOT}/api/payments`, {
+      const res = await fetch(`${FETCH_ROOT}/api/discountcodes`, {
         method: "post",
         headers: new Headers({
           "Authorization": `Bearer ${token}`
@@ -62,8 +62,6 @@ import MajorButton from "../components/MajorButton.svelte";
       }
       else {
         form.reset();
-
-        console.log(data);
       }
     }
     catch (err) {
@@ -83,7 +81,7 @@ import MajorButton from "../components/MajorButton.svelte";
         <div class="create-btn-container">
           <MajorButton
             width="200px"
-            label={isInAddingMode ? "View Payments" : "Add A Payment"}
+            label={isInAddingMode ? "View Discount Codes" : "Add A Discount Code"}
             on:click={swapCreateMode}
           />
         </div>
@@ -91,31 +89,24 @@ import MajorButton from "../components/MajorButton.svelte";
           <form class="create-form" bind:this={form} on:submit|preventDefault={submitAdding}>
             <div class="form-half-grid">
               <aside>
-                <label for="orderNumber">Order Number</label>
-                <input id="orderNumber" type="number" name="orderNumber" maxlength="50" disabled={isAddingPending} required />
+                <label for="discountCode">Discount Code</label>
+                <input id="discountCode" type="text" name="discountCode" minlength="8" maxlength="8" disabled={isAddingPending} required />
               </aside>
               <aside>
-                <label for="customerNumber">Customer Number</label>
-                <input id="customerNumber" type="text" name="customerNumber" maxlength="50" disabled={isAddingPending} required />
+                <label for="endDate">End Date</label>
+                <input id="endDate" type="date" name="endDate" maxlength="50" disabled={isAddingPending} required />
               </aside>
             </div>
             <div class="form-half-grid">
               <aside>
-                <label for="checkNumber">Cheque Number</label>
-                <input id="checkNumber" type="text" name="checkNumber" disabled={isAddingPending} required />
-              </aside>
-              <aside>
                 <label for="amount">Amount</label>
                 <input id="amount" type="number" name="amount" disabled={isAddingPending} required />
               </aside>
+              <aside>
+                <label for="discountPrice">Discount Price</label>
+                <input id="discountPrice" type="number" name="discountPrice" disabled={isAddingPending} required />
+              </aside>
             </div>
-            <aside>
-              <label for="isSuccess">Is Success</label>
-              <select id="isSuccess" type="number" name="isSuccess" disabled={isAddingPending} required>
-                <option value="true" selected>True</option>
-                <option value="false">False</option>
-              </select>
-            </aside>
             <div class="form-btn-container">
               <MajorButton
                 width="200px"
@@ -134,22 +125,20 @@ import MajorButton from "../components/MajorButton.svelte";
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Order No.</th>
-                  <th>Customer No.</th>
-                  <th>Cheque No.</th>
-                  <th>Payment Date</th>
-                  <th>Amount</th>
+                  <th>Discount Code</th>
+                  <th>Discount Price</th>
+                  <th>Start Date</th>
+                  <th>Expiration Date</th>
                 </tr>
               </thead>
               <tbody>
                 {#each list.slice(0, 200) as el, i}
-                  <tr on:click={() => navigate(`/payments/${el.orderNumber}`)}>
+                  <tr on:click={() => navigate(`/orders/${el.discountCode}`)}>
                     <td>{i + 1}</td>
-                    <td>{el.orderNumber}</td>
-                    <td>{el.customerNumber}</td>
-                    <td>{el.checkNumber}</td>
-                    <td>{el.paymentDate}</td>
-                    <td>{el.amount}
+                    <td>{el.discountCode}</td>
+                    <td>{el.discountPrice}</td>
+                    <td>{el.startDate}</td>
+                    <td>{el.endDate}
                       <div on:click|stopPropagation class="row-option">
                         <i class="fas fa-clipboard"></i>
                       </div>

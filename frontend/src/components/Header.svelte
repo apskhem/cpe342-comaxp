@@ -86,20 +86,26 @@
           </aside>
         </div>
         <div class={cx("controls-row", { "show": token })}>
-          <aside class={cx({ "sel": pathname.includes("orders") })} on:click={navigateOnce("/orders")}>
+          <aside class={cx({ "sel": pathname.includes("/orders") })} on:click={navigateOnce("/orders")}>
             Orders
           </aside>
-          <aside class={cx({ "sel": pathname.includes("payments") })} on:click={navigateOnce("/payments")}>
-            Payments
-          </aside>
-          <aside class={cx({ "sel": pathname.includes("employees") })} on:click={navigateOnce("/employees")}>
+          <aside class={cx({ "sel": pathname.includes("/employees") })} on:click={navigateOnce("/employees")}>
             Employees
           </aside>
-          <aside class={cx({ "sel": pathname.includes("customers") })} on:click={navigateOnce("/customers")}>
+          <aside class={cx({ "sel": pathname.includes("/customers") })} on:click={navigateOnce("/customers")}>
             Customers
           </aside>
-          <aside class={cx({ "sel": pathname.includes("products") })} on:click={navigateOnce("/products")}>
+          <aside class={cx({ "sel": pathname.includes("/products") })} on:click={navigateOnce("/products")}>
             Products
+          </aside>
+          <aside class={cx({ "sel": pathname.includes("/payments") })} on:click={navigateOnce("/payments")}>
+            PAYs.
+          </aside>
+          <aside class={cx({ "sel": pathname.includes("/preorders") })} on:click={navigateOnce("/preorders")}>
+            POs.
+          </aside>
+          <aside class={cx({ "sel": pathname.includes("/discount-codes") })} on:click={navigateOnce("/discount-codes")}>
+            DCCs.
           </aside>
         </div>
       </div>
@@ -234,7 +240,7 @@
 
       .controls-row {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(4, 1fr) repeat(3, 60px);
         gap: 2px;
         margin-top: 1em;
         border-radius: 8px 8px 0 0;

@@ -18,6 +18,11 @@
   import OrderList from "./routes/OrderList.svelte";
   import PaymentList from "./routes/PaymentList.svelte";
   import OrderView from "./routes/OrderView.svelte";
+  import PreOrderList from "./routes/PreOrderList.svelte";
+  import DiscountCodeList from "./routes/DiscountCodeList.svelte";
+  import PaymentView from "./routes/PaymentView.svelte";
+  import PreOrderView from "./routes/PreOrderView.svelte";
+  import DiscountCodeView from "./routes/DiscountCodeView.svelte";
 
   const start = () => {
     const loginItem = localStorage.getItem("token") ?? "";
@@ -45,6 +50,11 @@
     <Route path="/orders" component="{OrderList}" />
     <Route path="/orders/:id" component="{OrderView}" />
     <Route path="/payments" component="{PaymentList}" />
+    <Route path="/payments/:id" component="{PaymentView}" />
+    <Route path="/preorders" component="{PreOrderList}" />
+    <Route path="/preorders/:id" component="{PreOrderView}" />
+    <Route path="/discount-codes" component="{DiscountCodeList}" />
+    <Route path="/discount-codes/:id" component="{DiscountCodeView}" />
     <Route path="*" component="{NotFound}" />
   </Router>
   <Footer />

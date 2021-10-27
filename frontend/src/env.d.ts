@@ -76,6 +76,27 @@ module Model {
     paymentDate: string;
     amount: number;
   }
+
+  interface IPayment {
+    orderNumber: number;
+    customerNumber: number;
+    checkNumber: string;
+    paymentDate: string;
+    amount: number;
+  }
+
+  interface IPreOrder {
+    orderNumber: number;
+    upfrontPrice: number;
+  }
+
+  interface IDiscountCode {
+    discountCode: number;
+    startDate: string;
+    endDate: string;
+    amount: string;
+    discountPrice: number;
+  }
 }
 
 type Cart = Map<string, [ number, Model.IProduct ]>

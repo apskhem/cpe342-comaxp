@@ -10,7 +10,7 @@
   let token = "";
   let cart: Cart;
   let customer: Model.ICustomer;
-  let m_checkoutData: { coupon: string, customer: string };
+  let m_checkoutData: { coupon: string, customer: string, preorder: boolean };
   let subtotal = 0;
   let isPending = false;
   let errorMsg = "";
@@ -98,11 +98,11 @@
       body.append("priceEach", compressedOrder.priceEach);
       body.append("requiredDate", getFormattedCurrentDate());
       body.append("shippedDate", "");
-      body.append("status", "in process");
+      body.append("status", m_checkoutData.preorder ? "preorder" : "in process");
       body.append("customerNumber", `${customer.customerNumber}`);
       body.append("comments", `${comments}`);
       body.append("discountCode", `${m_checkoutData.coupon}`);
-      body.append("upfrontPrice", "");
+      body.append("upfrontPrice", m_checkoutData.preorder ? Math.round(subtotal / 2).toFixed(0) : "");
 
       console.log(body.toString());
 
@@ -121,6 +121,11 @@
       console.log(data);
 
       if (res.status === 200) {
+        // reset
+        checkoutData.set({ coupon: "", customer: "", preorder: false });
+        cartProduct.set(new Map());
+
+        // redirect to home
         navigate("/", { replace: true });
       }
       else {
@@ -141,7 +146,7 @@
     {#if customer}
       <div class="layout">
         <section class="customer-detail-container">
-          <div class="customer-name">{customer.contactFirstName} {customer.contactLastName}</div>
+          <div class="customer-name">{customer.customerName}</div>
           <div class="customer-address">
             <div>
               <i class="fas fa-map-marker-alt"></i>
@@ -182,13 +187,13 @@
           </table>
         </section>
         <section class="comment-section">
-          <label for="">Comment</label>
+          <label for=""><b>Comment</b></label>
           <textarea name="" id="" cols="30" rows="10" bind:value={comments}></textarea>
         </section>
         <SumForm
           enableInputs={false}
           sum={subtotal}
-          label="Place Order"
+          label={m_checkoutData.preorder ? "Place Pre-Order" : "Place Order"}
           isPending={isPending}
           errorMsg={errorMsg}
           onSubmit={placeOrder}

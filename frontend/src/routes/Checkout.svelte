@@ -2,6 +2,7 @@
   import { navigate } from "svelte-routing";
   import ProductCard from "../components/ProductCard.svelte";
   import SumForm from "../components/SumForm.svelte";
+import Toggle from "../components/Toggle.svelte";
   import { FETCH_ROOT } from "../env.global";
   import { checkoutData, cartProduct, loginToken } from "../stores";
 
@@ -10,6 +11,7 @@
   let cartRef: Cart;
   let filtered: Map<string, Cart>;
   let subtotal = 0;
+  let preorder = false;
   let isPending = false;
   let token = "";
   let errorMsg = "";
@@ -26,7 +28,7 @@
   }
 
   loginToken.subscribe((value) => token = value);
-
+  checkoutData.subscribe((value) => preorder = value.preorder);
   cartProduct.subscribe((cart: Cart) => {
     cartRef = cart;
 
@@ -121,7 +123,7 @@
         throw new Error("Incorrect customer code");
       }
 
-      checkoutData.set({ coupon, customer });
+      checkoutData.set({ coupon, customer, preorder });
       
       navigate("/placeorder");
     }
@@ -167,6 +169,15 @@
             </div>
           {/each}
         {/each}
+        {#if cartRef.size === 1}
+          <section class="toggle-container">
+            <div>Pre-Order</div>
+            <Toggle
+              value={preorder}
+              onChange={(e) => preorder = e.currentTarget.checked}
+            />
+          </section>
+        {/if}
         <SumForm
           enableInputs={true}
           sum={subtotal}
@@ -270,6 +281,17 @@
 
     > div {
       color: #A39D9D;
+    }
+  }
+
+  .toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    > div {
+      font-weight: bold;
+      margin-right: 8px;
     }
   }
 </style>

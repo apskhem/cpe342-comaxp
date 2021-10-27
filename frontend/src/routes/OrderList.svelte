@@ -20,6 +20,8 @@
     });
     
     list = await res.json();
+
+    console.log(list);
   };
 
   start();
@@ -39,9 +41,8 @@
                 <th>Required Date</th>
                 <th>Shipped Date</th>
                 <th>Customer Number</th>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Quantity</th>
+                <th>Discount Code</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -53,9 +54,8 @@
                   <td>{el.requiredDate}</td>
                   <td>{el.shippedDate}</td>
                   <td>{el.customerNumber}</td>
-                  <td>{el.productCode}</td>
-                  <td>{el.priceEach}</td>
-                  <td>{el.quantityOrdered}
+                  <td>{el.discountCode ?? ""}</td>
+                  <td>{el.status}
                     <div on:click|stopPropagation class="row-option">
                       <i class="fas fa-clipboard"></i>
                     </div>
@@ -76,5 +76,9 @@
   .layout {
     max-width: 900px;
     margin: 0 auto;
+  }
+
+  .table-container {
+    margin-top: 1em;
   }
 </style>

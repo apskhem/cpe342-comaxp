@@ -54,22 +54,26 @@
   };
 
   const submitAdding = async () => {
-    const formData = new FormData(form);
-    
+    if (isAddingPending) {
+      return;
+    }
+
     isAddingPending = true;
     errMsg = "";
 
     try {
+      // send request
       const res = await fetch(`${FETCH_ROOT}/api/employees`, {
         method: "post",
         headers: new Headers({
           "Authorization": `Bearer ${token}`
         }),
-        body: formData
+        body: new FormData(form)
       });
 
       const data = await res.json();
 
+      // handle request
       if (data.errors) {
         throw new Error(data.errors);
       }
@@ -79,7 +83,6 @@
     }
     catch (err) {
       errMsg = `${err}`;
-
       console.log(err);
     }
     finally {
@@ -95,7 +98,7 @@
         <div class="create-btn-container">
           <MajorButton
             width="200px"
-            label={isInAddingMode ? "View Employee" : "Add Employee"}
+            label={isInAddingMode ? "View Employees" : "Add An Employee"}
             on:click={swapCreateMode}
           />
         </div>
@@ -237,6 +240,10 @@
     input, select {
       width: 100%;
       padding: 6.4px 12px;
+
+      &[required]:empty {
+        border-color: darkorange;
+      }
     }
 
     select {

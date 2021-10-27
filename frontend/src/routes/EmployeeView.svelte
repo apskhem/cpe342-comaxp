@@ -24,6 +24,7 @@
         "Authorization": `Bearer ${token}`
       })
     });
+    
     payload = (await res.json())[0];
 
     console.log(payload);
@@ -122,14 +123,13 @@
       const res = await fetch(`${FETCH_ROOT}/api/employees/${id}`, {
         method: "delete",
         headers: new Headers({
-          "Authorization": `Bearer ${token}`,
-          "X-CSRF-TOKEN": "unknown"
+          "Authorization": `Bearer ${token}`
         })
       });
 
       // handle error
       if (res.status === 200) {
-        navigate(`/employees`);
+        navigate(`/employees`, { replace: true });
       }
       else {
         throw new Error(res.statusText);
@@ -166,12 +166,12 @@
               <div>
                 <span class="name">{payload.firstName} {payload.lastName}</span>
               </div>
-              <div>{payload.jobTitle}</div>
             </section>
-            <section class="contact-information">
+            <section class="form-information">
               <aside>E-mail:</aside>
               <input
-                type="text" value={`${payload.email}`}
+                type="text"
+                value={payload.email}
                 disabled
                 required
                 on:change={handleInputChange("email")}
@@ -179,7 +179,7 @@
               <aside>Extension:</aside>
               <input
                 type="text"
-                value={`${payload.extension}`}
+                value={payload.extension}
                 disabled={!isEditing}
                 required
                 on:change={handleInputChange("extension")}
@@ -187,7 +187,7 @@
               <aside>Office Code:</aside>
               <input
                 type="text"
-                value={`${payload.officeCode}`}
+                value={payload.officeCode}
                 disabled={!isEditing}
                 required
                 on:change={handleInputChange("officeCode")}
@@ -195,7 +195,7 @@
               <aside>Supervisor:</aside>
               <input
                 type="text"
-                value={`${payload.reportsTo ?? ""}`}
+                value={payload.reportsTo ?? ""}
                 placeholder="none"
                 disabled={!isEditing}
                 required
@@ -203,7 +203,7 @@
               >
               <aside>Position:</aside>
               <select
-                value={`${payload.jobTitle}`}
+                value={payload.jobTitle}
                 disabled={!isEditing}
                 required
                 on:change={handleInputChange("jobTitle")}
@@ -292,9 +292,9 @@
     }
   }
 
-  .contact-information {
+  .form-information {
     display: grid;
-    grid-template-columns: 108px 1fr;
+    grid-template-columns: 148px 1fr;
     gap: 8px;
     align-items: center;
 

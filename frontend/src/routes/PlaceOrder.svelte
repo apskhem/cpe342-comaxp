@@ -14,6 +14,7 @@
   let subtotal = 0;
   let isPending = false;
   let errorMsg = "";
+  let comments = "";
 
   loginToken.subscribe((value) => token = value);
   checkoutData.subscribe((value) => m_checkoutData = value);
@@ -29,6 +30,7 @@
 
   const start = async () => {
     if (!m_checkoutData.customer) {
+      navigate("/", { replace: true });
       return;
     }
 
@@ -86,21 +88,25 @@
     errorMsg = "";
 
     try {
-      const body = new FormData();
+      const body = new URLSearchParams();
       const compressedOrder = compressOrders(cart);
 
-      body.set("productCode", compressedOrder.productCode);
-      body.set("quantityOrdered", compressedOrder.quantityOrdered);
-      body.set("orderLineNumber", compressedOrder.orderLineNumber);
-      body.set("priceEach", compressedOrder.priceEach);
-      body.set("requiredDate", getFormattedCurrentDate());
-      body.set("status", "in process");
-      body.set("customerNumber", `${customer.customerNumber}`);
+      // append sending data
+      body.append("productCode", compressedOrder.productCode);
+      body.append("quantityOrdered", compressedOrder.quantityOrdered);
+      body.append("orderLineNumber", compressedOrder.orderLineNumber);
+      body.append("priceEach", compressedOrder.priceEach);
+      body.append("requiredDate", getFormattedCurrentDate());
+      body.append("shippedDate", "");
+      body.append("status", "in process");
+      body.append("customerNumber", `${customer.customerNumber}`);
+      body.append("comments", `${comments}`);
+      body.append("discountCode", `${m_checkoutData.coupon}`);
+      body.append("upfrontPrice", "");
 
-      if (m_checkoutData.coupon) {
-        body.set("discountCode", `${m_checkoutData.coupon}`);
-      }
+      console.log(body.toString());
 
+      // send request
       const res = await fetch(`${FETCH_ROOT}/api/orders`, {
         method: "post",
         headers: new Headers({
@@ -111,7 +117,15 @@
 
       const data = await res.json();
 
+      // handle request
       console.log(data);
+
+      if (res.status === 200) {
+        navigate("/", { replace: true });
+      }
+      else {
+        throw new Error("the status is not 200");
+      }
     }
     catch (err) {
       errorMsg = `${err}`;
@@ -126,7 +140,7 @@
   <main>
     {#if customer}
       <div class="layout">
-        <div class="customer-detail-container">
+        <section class="customer-detail-container">
           <div class="customer-name">{customer.contactFirstName} {customer.contactLastName}</div>
           <div class="customer-address">
             <div>
@@ -138,8 +152,8 @@
               <span>{customer.phone}</span>
             </div>
           </div>
-        </div>
-        <div class="table-container">
+        </section>
+        <section class="table-container">
           <table>
             <thead>
               <tr>
@@ -157,7 +171,7 @@
                   <td>{code}</td>
                   <td>{item.productName}</td>
                   <td>{count.toLocaleString("en")}</td>
-                  <td>${count * Number.parseFloat(item.buyPrice)}
+                  <td>${(count * Number.parseFloat(item.buyPrice)).toFixed(2)}
                     <div on:click|stopPropagation class="row-option">
                       <i class="fas fa-clipboard"></i>
                     </div>
@@ -166,7 +180,11 @@
               {/each}
             </tbody>
           </table>
-        </div>
+        </section>
+        <section class="comment-section">
+          <label for="">Comment</label>
+          <textarea name="" id="" cols="30" rows="10" bind:value={comments}></textarea>
+        </section>
         <SumForm
           enableInputs={false}
           sum={subtotal}
@@ -185,6 +203,8 @@
 
 <style lang="scss">
   .layout {
+    display: grid;
+    gap: 1em;
     max-width: 900px;
     margin: 0 auto;
     padding-top: 2em;
@@ -202,6 +222,17 @@
 
       i {
         margin-right: 8px;
+      }
+    }
+  }
+
+  .comment-section {
+    > textarea {
+      width: 100%;
+      resize: none;
+
+      &:focus {
+        outline: none;
       }
     }
   }

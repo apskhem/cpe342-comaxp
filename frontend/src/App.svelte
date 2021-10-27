@@ -17,6 +17,7 @@
   import ProductView from "./routes/ProductView.svelte";
   import OrderList from "./routes/OrderList.svelte";
   import PaymentList from "./routes/PaymentList.svelte";
+  import OrderView from "./routes/OrderView.svelte";
 
   const start = () => {
     const loginItem = localStorage.getItem("token") ?? "";
@@ -42,6 +43,7 @@
     <Route path="/products" component="{ProductList}" />
     <Route path="/products/:id" component="{ProductView}" />
     <Route path="/orders" component="{OrderList}" />
+    <Route path="/orders/:id" component="{OrderView}" />
     <Route path="/payments" component="{PaymentList}" />
     <Route path="*" component="{NotFound}" />
   </Router>

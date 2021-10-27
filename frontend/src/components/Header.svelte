@@ -6,6 +6,15 @@
   let token = "";
   let cartCount = 0;
   let shake = true;
+  let pathname = window.location.pathname
+  
+  setInterval(() => {
+    if (pathname === window.location.pathname) {
+      return;
+    }
+
+    pathname = window.location.pathname;
+  }, 200);
   
   loginToken.subscribe((value) => token = value);
 
@@ -77,19 +86,19 @@
           </aside>
         </div>
         <div class={cx("controls-row", { "show": token })}>
-          <aside on:click={navigateOnce("/orders")}>
+          <aside class={cx({ "sel": pathname.includes("orders") })} on:click={navigateOnce("/orders")}>
             Orders
           </aside>
-          <aside on:click={navigateOnce("/payments")}>
+          <aside class={cx({ "sel": pathname.includes("payments") })} on:click={navigateOnce("/payments")}>
             Payments
           </aside>
-          <aside on:click={navigateOnce("/employees")}>
+          <aside class={cx({ "sel": pathname.includes("employees") })} on:click={navigateOnce("/employees")}>
             Employees
           </aside>
-          <aside on:click={navigateOnce("/customers")}>
+          <aside class={cx({ "sel": pathname.includes("customers") })} on:click={navigateOnce("/customers")}>
             Customers
           </aside>
-          <aside on:click={navigateOnce("/products")}>
+          <aside class={cx({ "sel": pathname.includes("products") })} on:click={navigateOnce("/products")}>
             Products
           </aside>
         </div>
@@ -236,6 +245,10 @@
         &.show {
           pointer-events: auto;
           opacity: 1;
+        }
+
+        > .sel {
+          background-color: darkgray;
         }
 
         > aside {

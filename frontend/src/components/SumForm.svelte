@@ -4,6 +4,7 @@
   export let label: string;
   export let sum: number;
   export let errorMsg: string;
+  export let discountCode: Model.IDiscountCode | null = null;
   export let onSubmit: (coupon: string, customer: string) => void;
   
   let customer = "";
@@ -17,13 +18,19 @@
         <aside>Subtotal:</aside>
         <aside>${sum.toLocaleString("en")}</aside>
       </div>
+      {#if discountCode}
+        <div class="total-grid">
+          <aside>Discounted:</aside>
+          <aside>{-discountCode.discountPrice}</aside>
+        </div>
+      {/if}
       <div class="total-grid">
         <aside>Shipping Fee:</aside>
         <aside>Free</aside>
       </div>
       <div class="total-grid total">
         <aside>Total:</aside>
-        <aside>${sum.toLocaleString("en")}</aside>
+        <aside>${(sum - (discountCode?.discountPrice || 0)).toLocaleString("en")}</aside>
       </div>
       {#if enableInputs}
         <input
@@ -31,6 +38,8 @@
           placeholder="Discount code"
           bind:value={coupon}
           disabled={isPending}
+          minlength="8"
+          maxlength="8"
         >
         <input
           type="text"

@@ -10,6 +10,7 @@
   let token = "";
   let cart: Cart;
   let customer: Model.ICustomer;
+  let coupon: Model.IDiscountCode;
   let m_checkoutData: { coupon: string, customer: string, preorder: boolean };
   let subtotal = 0;
   let isPending = false;
@@ -34,14 +35,32 @@
       return;
     }
 
-    const res = await fetch(`${FETCH_ROOT}/api/customers/${m_checkoutData.customer}`, {
+    const cusReq = fetch(`${FETCH_ROOT}/api/customers/${m_checkoutData.customer}`, {
       method: "get",
       headers: new Headers({
         "Authorization": `Bearer ${token}`
       })
     });
 
-    customer = (await res.json())[0];
+    if (m_checkoutData.coupon) {
+      const [ resCustomer, resCoupon ] = await Promise.all([
+        cusReq,
+        fetch(`${FETCH_ROOT}/api/is-discountcode-exist/${m_checkoutData.coupon}`, {
+          method: "get",
+          headers: new Headers({
+            "Authorization": `Bearer ${token}`
+          })
+        })
+      ]);
+
+      customer = (await resCustomer.json())[0];
+      coupon = (await resCoupon.json()).discountCode;
+    }
+    else {
+      const resCustomer = await cusReq;
+
+      customer = (await resCustomer.json())[0];
+    }
   };
 
   start();
@@ -196,6 +215,7 @@
           label={m_checkoutData.preorder ? "Place Pre-Order" : "Place Order"}
           isPending={isPending}
           errorMsg={errorMsg}
+          discountCode={coupon ?? null}
           onSubmit={placeOrder}
         />
       </div>

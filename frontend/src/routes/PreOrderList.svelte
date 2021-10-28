@@ -47,7 +47,7 @@
             </thead>
             <tbody>
               {#each list.slice(0, 200) as el, i}
-                <tr on:click={() => navigate(`/orders/${el.orderNumber}`)}>
+                <tr on:click={() => navigate(`/preorders/${el.orderNumber}`)}>
                   <td>{i + 1}</td>
                   <td>{el.orderNumber}</td>
                   <td>{el.upfrontPrice}

@@ -6,6 +6,10 @@
   export let limit = Infinity;
   export let vendor: string;
   export let products: Model.IProduct[];
+
+  const sort = (item: Model.IProduct[]) => {
+    return item.sort((a, b) => Number.parseInt(a.productScale.split(":")[1]) - Number.parseInt(b.productScale.split(":")[1]))
+  }
 </script>
 
 <template>
@@ -17,7 +21,7 @@
       {/if}
     </div>
     <div class="item-layout">
-      {#each products.slice(0, limit) as p}
+      {#each sort(products.slice(0, limit)) as p}
         <ProductCard data={p} />
       {/each}
     </div>

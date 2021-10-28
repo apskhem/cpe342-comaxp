@@ -110,22 +110,58 @@ import Toggle from "../components/Toggle.svelte";
     errorMsg = "";
     
     try {
-      const res = await fetch(`${FETCH_ROOT}/api/customers/${customer}`, {
+      // check for customer and coupon
+      const req = fetch(`${FETCH_ROOT}/api/customers/${customer}`, {
         method: "get",
         headers: new Headers({
           "Authorization": `Bearer ${token}`
         })
       });
-      const data = (await res.json());
 
-      // error guard
-      if (!data || !data.length) {
-        throw new Error("Incorrect customer code");
+      if (coupon) {
+        const [ resCustomer, resCoupon ] = await Promise.all([
+          req,
+          fetch(`${FETCH_ROOT}/api/is-discountcode-exist/${coupon}`, {
+            method: "get",
+            headers: new Headers({
+              "Authorization": `Bearer ${token}`
+            })
+          })
+        ])
+
+        const cusData = await resCustomer.json();
+        const couponData = await resCoupon.json();
+
+        // handle response
+        if (!couponData || couponData.isAvailable === "false") {
+          throw new Error("incorrect discount code");
+        }
+        else if (couponData.discountCode.discountPrice >= subtotal) {
+          throw new Error("subtotal is more than discount price");
+        }
+        else if (!cusData || !cusData.length) {
+          throw new Error("incorrect customer number");
+        }
+        else {
+          checkoutData.set({ coupon, customer, preorder });
+        
+          navigate("/placeorder");
+        }
       }
+      else {
+        const resCustomer = await req;
 
-      checkoutData.set({ coupon, customer, preorder });
-      
-      navigate("/placeorder");
+        const data = await resCustomer.json();
+
+        // handle response
+        if (!data || !data.length) {
+          throw new Error("Incorrect customer code");
+        }
+
+        checkoutData.set({ coupon, customer, preorder });
+        
+        navigate("/placeorder");
+      }
     }
     catch (err) {
       errorMsg = `${err}`;
